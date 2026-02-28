@@ -1,181 +1,276 @@
 import React from "react";
-import { EditorContent, useEditor, type Editor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
-import Link from "@tiptap/extension-link";
-import Placeholder from "@tiptap/extension-placeholder";
-import Image from "@tiptap/extension-image";
-import TextAlign from "@tiptap/extension-text-align";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
 import {
-  AlignCenter,
-  AlignLeft,
-  AlignRight,
+  Alignment,
+  AutoImage,
+  AutoLink,
+  Base64UploadAdapter,
+  BlockQuote,
   Bold,
-  Heading1,
-  Heading2,
-  Image as ImageIcon,
+  ClassicEditor,
+  Code,
+  CodeBlock,
+  Essentials,
+  FontColor,
+  FontFamily,
+  FontSize,
+  Heading,
+  HorizontalLine,
+  ImageBlock,
+  ImageCaption,
+  ImageInsert,
+  ImageInsertViaUrl,
+  ImageResize,
+  ImageStyle,
+  ImageToolbar,
+  ImageUpload,
+  Indent,
+  IndentBlock,
   Italic,
-  Link as LinkIcon,
+  Link,
+  LinkImage,
   List,
-  ListOrdered,
-  Loader2,
-  Underline as UnderlineIcon,
-} from "lucide-react";
-import { api } from "@/shared/api/api";
+  ListProperties,
+  Paragraph,
+  PasteFromOffice,
+  RemoveFormat,
+  Strikethrough,
+  Table,
+  TableCaption,
+  TableCellProperties,
+  TableColumnResize,
+  TableProperties,
+  TableSelection,
+  TableToolbar,
+  TextTransformation,
+  Underline,
+  type EditorConfig,
+} from "ckeditor5";
 
-type UploadState = Readonly<{
-  isUploading: boolean;
-  message: string;
-  type: "idle" | "success" | "error";
-}>;
-
-type UploadResponse = Readonly<{
-  url?: string;
-  data?: Readonly<{ url?: string }>;
-  result?: Readonly<{ url?: string }>;
-}>;
+import "ckeditor5/ckeditor5.css";
+import "@/styles/ckeditor-custom.css";
 
 type Props = Readonly<{
   initialContent: string;
   onChange: (content: string) => void;
   placeholder?: string;
   className?: string;
+  disabled?: boolean;
+  minHeight?: string;
 }>;
 
-const toolBtn = (active = false): React.CSSProperties => ({
-  width: 32,
-  height: 32,
-  borderRadius: 999,
-  border: "1px solid var(--line)",
-  background: active ? "#e0e7ff" : "#fff",
-  color: active ? "var(--primary)" : "var(--text)",
-  display: "grid",
-  placeItems: "center",
-  cursor: "pointer",
-});
-
-function fileToDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result;
-      if (typeof result === "string") resolve(result);
-      else reject(new Error("Failed to read file"));
-    };
-    reader.onerror = () => reject(reader.error ?? new Error("Failed to read file"));
-    reader.readAsDataURL(file);
-  });
-}
-
-function insertLink(editor: Editor): void {
-  const previous = editor.getAttributes("link").href as string | undefined;
-  const next = window.prompt("Enter URL", previous ?? "https://");
-  if (!next) return;
-  editor.chain().focus().extendMarkRange("link").setLink({ href: next }).run();
-}
-
-const RichTextEditor: React.FC<Props> = ({ initialContent, onChange, placeholder, className }) => {
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-  const [upload, setUpload] = React.useState<UploadState>({
-    isUploading: false,
-    message: "",
-    type: "idle",
-  });
-
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({ heading: { levels: [1, 2] } }),
-      Underline,
-      Link.configure({ openOnClick: false }),
-      Image,
-      TextAlign.configure({ types: ["heading", "paragraph"] }),
-      Placeholder.configure({ placeholder: placeholder ?? "Write something..." }),
-    ],
-    content: initialContent || "",
-    onUpdate: ({ editor: ed }) => onChange(ed.getHTML()),
-    editorProps: {
-      attributes: {
-        class: "prose max-w-none min-h-[220px] focus:outline-none",
-      },
-    },
-    immediatelyRender: false,
-  });
+const RichTextEditor: React.FC<Props> = ({
+  initialContent = "",
+  onChange,
+  placeholder = "Start typing...",
+  className,
+  disabled = false,
+  minHeight = "400px",
+}) => {
+  const lastEmittedRef = React.useRef(initialContent);
+  const editorRef = React.useRef<{ getData: () => string; setData: (data: string) => void } | null>(null);
 
   React.useEffect(() => {
+    const editor = editorRef.current;
     if (!editor) return;
-    const current = editor.getHTML();
-    if (current !== (initialContent || "")) editor.commands.setContent(initialContent || "");
-  }, [editor, initialContent]);
+    const current = editor.getData();
+    if (initialContent !== current && initialContent !== lastEmittedRef.current) {
+      editor.setData(initialContent);
+      lastEmittedRef.current = initialContent;
+    }
+  }, [initialContent]);
 
-  const uploadImage = React.useCallback(
-    async (file: File) => {
-      if (!editor) return;
-      if (!file.type.startsWith("image/")) {
-        setUpload({ isUploading: false, message: "Please select an image file.", type: "error" });
-        return;
-      }
-
-      setUpload({ isUploading: true, message: "Uploading image...", type: "idle" });
-      try {
-        const fd = new FormData();
-        fd.append("image", file);
-        const res = await api.post<UploadResponse>("/images/upload", fd, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        const imageUrl = res.data?.url ?? res.data?.data?.url ?? res.data?.result?.url;
-        if (!imageUrl) throw new Error("Invalid upload response");
-
-        editor.chain().focus().setImage({ src: imageUrl }).run();
-        setUpload({ isUploading: false, message: "Image uploaded.", type: "success" });
-      } catch {
-        try {
-          const localPreview = await fileToDataUrl(file);
-          editor.chain().focus().setImage({ src: localPreview }).run();
-          setUpload({ isUploading: false, message: "Image added locally (upload API unavailable).", type: "success" });
-        } catch {
-          setUpload({ isUploading: false, message: "Image upload failed.", type: "error" });
-        }
-      }
-    },
-    [editor]
+  const editorConfig: EditorConfig = React.useMemo(
+    () => ({
+      licenseKey: "GPL",
+      toolbar: {
+        items: [
+          "heading",
+          "|",
+          "fontSize",
+          "fontFamily",
+          "fontColor",
+          "|",
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
+          "code",
+          "removeFormat",
+          "|",
+          "alignment",
+          "|",
+          "bulletedList",
+          "numberedList",
+          "|",
+          "outdent",
+          "indent",
+          "|",
+          "link",
+          "insertImage",
+          "insertTable",
+          "blockQuote",
+          "codeBlock",
+          "horizontalLine",
+        ],
+        shouldNotGroupWhenFull: true,
+      },
+      plugins: [
+        Alignment,
+        AutoImage,
+        AutoLink,
+        Base64UploadAdapter,
+        BlockQuote,
+        Bold,
+        Code,
+        CodeBlock,
+        Essentials,
+        FontColor,
+        FontFamily,
+        FontSize,
+        Heading,
+        HorizontalLine,
+        ImageBlock,
+        ImageCaption,
+        ImageInsert,
+        ImageInsertViaUrl,
+        ImageResize,
+        ImageStyle,
+        ImageToolbar,
+        ImageUpload,
+        Indent,
+        IndentBlock,
+        Italic,
+        Link,
+        LinkImage,
+        List,
+        ListProperties,
+        Paragraph,
+        PasteFromOffice,
+        RemoveFormat,
+        Strikethrough,
+        Table,
+        TableCaption,
+        TableCellProperties,
+        TableColumnResize,
+        TableProperties,
+        TableToolbar,
+        TableSelection,
+        TextTransformation,
+        Underline,
+      ],
+      balloonToolbar: ["bold", "italic", "|", "link"],
+      fontFamily: {
+        options: [
+          "default",
+          "Arial, Helvetica, sans-serif",
+          "Courier New, Courier, monospace",
+          "Georgia, serif",
+          "Lucida Sans Unicode, Lucida Grande, sans-serif",
+          "Tahoma, Geneva, sans-serif",
+          "Times New Roman, Times, serif",
+          "Trebuchet MS, Helvetica, sans-serif",
+          "Verdana, Geneva, sans-serif",
+        ],
+        supportAllValues: true,
+      },
+      fontSize: {
+        options: [10, 12, 14, "default", 18, 20, 22, 24, 26, 28, 36, 48, 72],
+        supportAllValues: true,
+      },
+      heading: {
+        options: [
+          { model: "paragraph", title: "Paragraph", class: "ck-heading_paragraph" },
+          { model: "heading1", view: "h1", title: "Heading 1", class: "ck-heading_heading1" },
+          { model: "heading2", view: "h2", title: "Heading 2", class: "ck-heading_heading2" },
+          { model: "heading3", view: "h3", title: "Heading 3", class: "ck-heading_heading3" },
+          { model: "heading4", view: "h4", title: "Heading 4", class: "ck-heading_heading4" },
+          { model: "heading5", view: "h5", title: "Heading 5", class: "ck-heading_heading5" },
+          { model: "heading6", view: "h6", title: "Heading 6", class: "ck-heading_heading6" },
+        ],
+      },
+      image: {
+        toolbar: [
+          "toggleImageCaption",
+          "imageTextAlternative",
+          "|",
+          "imageStyle:alignLeft",
+          "imageStyle:alignCenter",
+          "imageStyle:alignRight",
+          "|",
+          "resizeImage",
+          "|",
+          "linkImage",
+        ],
+        insert: { integrations: ["upload", "url"] },
+        resizeUnit: "px",
+        resizeOptions: [
+          { name: "resizeImage:original", label: "Original", value: null },
+          { name: "resizeImage:25", label: "25%", value: "25" },
+          { name: "resizeImage:50", label: "50%", value: "50" },
+          { name: "resizeImage:75", label: "75%", value: "75" },
+          { name: "resizeImage:100", label: "100%", value: "100" },
+        ],
+        styles: {
+          options: ["alignLeft", "alignCenter", "alignRight", "alignBlockLeft", "alignBlockRight", "block", "side"],
+        },
+      },
+      link: {
+        addTargetToExternalLinks: true,
+        defaultProtocol: "https://",
+        decorators: {
+          toggleDownloadable: {
+            mode: "manual",
+            label: "Downloadable",
+            attributes: { download: "file" },
+          },
+          openInNewTab: {
+            mode: "manual",
+            label: "Open in a new tab",
+            defaultValue: true,
+            attributes: { target: "_blank", rel: "noopener noreferrer" },
+          },
+        },
+      },
+      list: {
+        properties: {
+          styles: true,
+          startIndex: true,
+          reversed: true,
+        },
+      },
+      placeholder,
+      table: {
+        contentToolbar: [
+          "tableColumn",
+          "tableRow",
+          "mergeTableCells",
+          "tableProperties",
+          "tableCellProperties",
+          "toggleTableCaption",
+        ],
+      },
+    }),
+    [placeholder]
   );
 
-  if (!editor) return null;
-
   return (
-    <div className={className} style={{ border: "1px solid var(--line)", borderRadius: 12, overflow: "hidden", background: "#fff" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 6, padding: 8, flexWrap: "wrap", borderBottom: "1px solid var(--line)", background: "var(--surface-2)" }}>
-        <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} style={toolBtn(editor.isActive("bold"))}><Bold size={15} /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} style={toolBtn(editor.isActive("italic"))}><Italic size={15} /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} style={toolBtn(editor.isActive("underline"))}><UnderlineIcon size={15} /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} style={toolBtn(editor.isActive("heading", { level: 1 }))}><Heading1 size={15} /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} style={toolBtn(editor.isActive("heading", { level: 2 }))}><Heading2 size={15} /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} style={toolBtn(editor.isActive("bulletList"))}><List size={15} /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} style={toolBtn(editor.isActive("orderedList"))}><ListOrdered size={15} /></button>
-        <button type="button" onClick={() => insertLink(editor)} style={toolBtn(editor.isActive("link"))}><LinkIcon size={15} /></button>
-        <button type="button" onClick={() => fileInputRef.current?.click()} style={toolBtn()}><ImageIcon size={15} /></button>
-        <button type="button" onClick={() => editor.chain().focus().setTextAlign("left").run()} style={toolBtn(editor.isActive({ textAlign: "left" }))}><AlignLeft size={15} /></button>
-        <button type="button" onClick={() => editor.chain().focus().setTextAlign("center").run()} style={toolBtn(editor.isActive({ textAlign: "center" }))}><AlignCenter size={15} /></button>
-        <button type="button" onClick={() => editor.chain().focus().setTextAlign("right").run()} style={toolBtn(editor.isActive({ textAlign: "right" }))}><AlignRight size={15} /></button>
-        {upload.isUploading ? <Loader2 size={15} className="animate-spin" /> : null}
-        {upload.message ? <span style={{ fontSize: 12, color: upload.type === "error" ? "#b91c1c" : upload.type === "success" ? "#166534" : "var(--muted)" }}>{upload.message}</span> : null}
-      </div>
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        style={{ display: "none" }}
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) void uploadImage(file);
-          if (fileInputRef.current) fileInputRef.current.value = "";
+    <div className={["ckeditor-wrapper", className].filter(Boolean).join(" ")} style={{ minHeight }}>
+      <CKEditor
+        editor={ClassicEditor}
+        config={editorConfig}
+        data={initialContent}
+        disabled={disabled}
+        disableWatchdog
+        onReady={(editor: { getData: () => string; setData: (data: string) => void }) => {
+          editorRef.current = editor;
+        }}
+        onChange={(_event: unknown, editor: { getData: () => string }) => {
+          const data = editor.getData();
+          lastEmittedRef.current = data;
+          onChange(data);
         }}
       />
-
-      <div style={{ minHeight: 220, padding: 12 }}>
-        <EditorContent editor={editor} />
-      </div>
     </div>
   );
 };
