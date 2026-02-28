@@ -1,0 +1,20 @@
+import { makeCrud } from "../../shared/api/crudFactory";
+import type { CrudPaths } from "../../shared/api/crudFactory";
+import type { Faq, FaqCreateDto, FaqUpdateDto } from "./faq.types";
+
+const paths: CrudPaths = {
+  getAll: "/faq/get-all",
+  getOne: (id) => `/faq/get/${id}`,
+
+  create: "/faq/create",
+  update: (id) => `/faq/update/${id}`,
+
+  softDelete: (ids) => `/faq/delete/${ids}`, // supports comma-separated IDs
+
+  deletedList: "/faq/deleted",
+  recover: "/faq/recover",
+
+  destroy: (ids) => `/faq/destroy/${ids}`, // supports comma-separated IDs
+} as const;
+
+export const faqModule = makeCrud<Faq, FaqCreateDto, FaqUpdateDto>("faq", paths);

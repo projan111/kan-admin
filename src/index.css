@@ -1,0 +1,132 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #f2f5fa;
+  --surface: #ffffff;
+  --surface-soft: #f8fbff;
+  --surface-strong: #e8eff9;
+  --text: #0e1726;
+  --muted: #5b6b82;
+  --line: #d8e1ee;
+
+  --primary: #0f5bd8;
+  --primary-strong: #0a43a4;
+  --accent: #ff8d4d;
+  --success: #0f9f78;
+  --danger: #cf2f2f;
+
+  --panel-shadow: 0 22px 48px rgba(15, 32, 64, 0.12);
+  --card-shadow: 0 12px 26px rgba(15, 32, 64, 0.08);
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  background:
+    radial-gradient(1000px 580px at -8% -12%, rgba(15, 91, 216, 0.18) 0%, transparent 58%),
+    radial-gradient(780px 460px at 102% -10%, rgba(255, 141, 77, 0.18) 0%, transparent 64%),
+    linear-gradient(180deg, #f8fbff 0%, var(--bg) 68%);
+  font-family: "Satoshi", "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  accent-color: var(--primary);
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  border-radius: var(--radius-sm);
+}
+
+@theme inline {
+  --color-primary: var(--primary);
+}
+
+.auth-shell h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.auth-shell form {
+  display: grid;
+  gap: 10px;
+}
+
+.auth-shell input,
+.auth-shell select,
+.auth-shell textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--surface-soft);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  outline: none;
+}
+
+.auth-shell input:focus,
+.auth-shell select:focus,
+.auth-shell textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 16%, transparent);
+}
+
+.auth-shell a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.auth-shell a:hover {
+  text-decoration: underline;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.premium-animate-in {
+  animation: fade-up 340ms ease-out both;
+}
