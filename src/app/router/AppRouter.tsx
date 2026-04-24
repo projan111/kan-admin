@@ -10,8 +10,6 @@ import { ResetPasswordPage } from "@/pages/auth/ResetPasswordPage";
 import { ChangePasswordPage } from "@/pages/auth/ChangePasswordPage";
 import { SignupPage } from "@/pages/auth/SignupPage";
 import { RoleGuard } from "../guards/RoleGuard";
-import { UsersPage } from "../../pages/dashboard/users/UsersPage";
-import { ContactPage } from "../../pages/dashboard/contact/ContactPage";
 import { BrandPage } from "../../pages/dashboard/brand/BrandPage";
 import { CsrPage } from "../../pages/dashboard/csr/CsrPage";
 import { NewsroomPage } from "../../pages/dashboard/newsroom/NewsroomPage";
@@ -52,6 +50,8 @@ import { ModulePlaceholderPage } from "../../pages/dashboard/common/ModulePlaceh
 const placeholderModules = ecommerceModules.filter(
   (module) => !["overview", "users", "customers"].includes(module.key)
 );
+const usersModule = ecommerceModules.find((module) => module.key === "users");
+const customersModule = ecommerceModules.find((module) => module.key === "customers");
 
 export const AppRouter: React.FC = () => {
   return (
@@ -66,7 +66,19 @@ export const AppRouter: React.FC = () => {
         <Route element={<DashboardLayout />}>
           <Route element={<RoleGuard allow={["ADMIN", "SUDOADMIN"]} />}>
             <Route element={<PermissionGuard permission="users.manage" />}>
-              <Route path="/dashboard/users" element={<UsersPage />} />
+              <Route
+                path="/dashboard/users"
+                element={
+                  usersModule ? (
+                    <ModulePlaceholderPage
+                      moduleKey={usersModule.key}
+                      title={usersModule.label}
+                      description={usersModule.description}
+                      icon={usersModule.icon}
+                    />
+                  ) : null
+                }
+              />
               <Route path="/dashboard/users/create" element={<UsersCreatePage />} />
               <Route path="/dashboard/users/:id/edit" element={<UsersEditPage />} />
               <Route path="/dashboard/users/:id" element={<UsersViewPage />} />
@@ -81,7 +93,19 @@ export const AppRouter: React.FC = () => {
             <Route path="/dashboard/auth/signup" element={<SignupPage />} />
           </Route>
 
-          <Route path="/dashboard/customers" element={<ContactPage />} />
+          <Route
+            path="/dashboard/customers"
+            element={
+              customersModule ? (
+                <ModulePlaceholderPage
+                  moduleKey={customersModule.key}
+                  title={customersModule.label}
+                  description={customersModule.description}
+                  icon={customersModule.icon}
+                />
+              ) : null
+            }
+          />
           <Route element={<PermissionGuard permission="entity.create" />}>
             <Route path="/dashboard/customers/create" element={<ContactCreatePage />} />
           </Route>
@@ -154,7 +178,7 @@ export const AppRouter: React.FC = () => {
             <Route
               key={module.key}
               path={module.path}
-              element={<ModulePlaceholderPage title={module.label} description={module.description} icon={module.icon} />}
+              element={<ModulePlaceholderPage moduleKey={module.key} title={module.label} description={module.description} icon={module.icon} />}
             />
           ))}
         </Route>

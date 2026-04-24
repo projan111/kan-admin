@@ -44,7 +44,7 @@ export const SoftDeleteListToolbar: React.FC<Props> = ({
         placeholder={searchPlaceholder}
         value={searchValue}
         onChange={(e) => onSearchChange(e.target.value)}
-        className="w-full sm:max-w-sm h-10 rounded-xs border border-slate-300 px-3 text-sm bg-white"
+        className="h-10 w-full bg-white sm:max-w-sm"
       />
     </div>
     <div className="flex items-center gap-2">
@@ -61,7 +61,7 @@ export const SoftDeleteListToolbar: React.FC<Props> = ({
         <select
           value={sortValue}
           onChange={(e) => onSortChange(e.target.value)}
-          className="h-9 px-3 rounded-xs border border-slate-300 bg-white text-sm"
+          className="h-9 rounded-md border border-[var(--line)] bg-white px-3 text-sm text-[var(--text)] outline-none transition-colors focus:border-[var(--primary)]"
         >
           <option value="">Default</option>
           {sortOptions.map((opt) => (
@@ -74,7 +74,7 @@ export const SoftDeleteListToolbar: React.FC<Props> = ({
         <Button
           onClick={() => onTabChange("deleted")}
           variant="outline"
-          className={tab === "deleted" ? "bg-rose-50 text-rose-700  border-rose-300" : "text-rose-600 outline-1 outline-red-500 "}
+          className={tab === "deleted" ? "border-rose-200 bg-rose-50 text-rose-700" : "text-rose-600"}
         >
           <Trash2 size={14} /> <span className="ml-1">Deleted</span>
         </Button>

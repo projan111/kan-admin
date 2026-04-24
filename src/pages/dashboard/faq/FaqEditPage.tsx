@@ -62,17 +62,17 @@ export const FaqEditPage: React.FC = () => {
 
   return (
     <div className="p-6 w-full max-w-[960px] mx-auto">
-      <div className="flex justify-between items-center mb-6 bg-white px-1 py-1">
+      <div className="mb-6 flex items-center justify-between rounded-md border border-[var(--line)] bg-white px-5 py-4 shadow-[var(--card-shadow)]">
         <div>
-          <h1 className="text-2xl font-bold">Edit FAQ</h1>
-          <p className="text-muted-foreground">Update FAQ details</p>
+          <h1 className="text-2xl font-bold text-[var(--text)]">Edit FAQ</h1>
+          <p className="text-[var(--muted)]">Update FAQ details</p>
         </div>
-        <Button onClick={() => navigate("/dashboard/faq")} variant="outline" className="text-red-500 flex items-center gap-2">
+        <Button onClick={() => navigate("/dashboard/faq")} variant="outline" className="flex items-center gap-2 text-red-500">
           <X className="w-4 h-4" />
           Exit
         </Button>
       </div>
-      <div className="grid gap-4 py-4 border border-slate-200 rounded-xs bg-white p-4">
+      <div className="grid gap-4 rounded-md border border-[var(--line)] bg-white p-5 shadow-[var(--card-shadow)]">
         <div className="grid gap-2">
           <label htmlFor="title" className="text-sm font-medium">Question</label>
           <Input id="title" type="text" value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} placeholder="Enter question" />
@@ -88,7 +88,7 @@ export const FaqEditPage: React.FC = () => {
             <label htmlFor="sortOrder" className="text-sm font-medium">Sort Order</label>
             <Input id="sortOrder" type="number" value={form.sortOrder} onChange={(e) => setForm((p) => ({ ...p, sortOrder: e.target.value }))} />
           </div>
-          <label className="flex items-center gap-2 mt-7 text-sm">
+          <label className="mt-7 flex items-center gap-2 text-sm text-[var(--text)]">
             <input type="checkbox" checked={form.isActive} onChange={(e) => setForm((p) => ({ ...p, isActive: e.target.checked }))} />
             Active
           </label>

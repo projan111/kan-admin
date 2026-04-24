@@ -42,17 +42,24 @@ export const TopNav: React.FC<Props> = ({
 
   return (
     <header className="sticky top-0 z-30 border-b border-white/70 bg-white/85 px-3 py-3 backdrop-blur md:px-6">
-      <div className="flex items-center gap-3">
+      <div className="mx-auto flex w-full max-w-375 items-center gap-3">
         <button onClick={onOpenMobile} className="grid h-10 w-10 place-items-center rounded-xl border border-[var(--line)] bg-white text-[var(--text)] md:hidden">
           <Menu size={18} strokeWidth={2} />
         </button>
 
-        <div className="hidden flex-1 items-center md:flex">
+        <div className="min-w-0 flex-1">
+          <div className="hidden md:block">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--muted)]">Control Room</p>
+            <h1 className="truncate text-lg font-black tracking-tight text-[var(--text)]">Main Template Commerce Dashboard</h1>
+          </div>
+        </div>
+
+        <div className="hidden flex-1 items-center xl:flex">
           <div className="relative w-full max-w-md">
             <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted)]" />
             <input
               placeholder="Search products, customers, campaigns..."
-              className="h-10 w-full rounded-xl border border-[var(--line)] bg-[var(--surface-soft)] pl-9 pr-3 text-sm outline-none focus:border-[var(--primary)]"
+              className="h-10 w-full rounded-xl border border-[var(--line)] bg-[var(--surface-soft)] pl-9 pr-3 text-sm outline-none transition-colors focus:border-[var(--primary)]"
             />
           </div>
         </div>
@@ -61,7 +68,7 @@ export const TopNav: React.FC<Props> = ({
           <button
             type="button"
             onClick={() => setNotificationsOpen((v) => !v)}
-            className="relative grid h-10 w-10 place-items-center rounded-xl border border-[var(--line)] bg-white text-[var(--text)]"
+            className="relative grid h-10 w-10 place-items-center rounded-xl border border-[var(--line)] bg-white text-[var(--text)] transition-colors hover:bg-[var(--surface-soft)]"
           >
             <Bell size={18} strokeWidth={2} />
             {unreadContactsCount > 0 ? (
@@ -107,7 +114,7 @@ export const TopNav: React.FC<Props> = ({
         <div className="relative">
           <button
             onClick={() => setOpen((v) => !v)}
-            className="flex items-center gap-2 rounded-xl border border-[var(--line)] bg-white px-2 py-1.5"
+            className="flex items-center gap-2 rounded-xl border border-[var(--line)] bg-white px-2 py-1.5 transition-colors hover:bg-[var(--surface-soft)]"
           >
             {profilePicture && !avatarBroken ? (
               <img

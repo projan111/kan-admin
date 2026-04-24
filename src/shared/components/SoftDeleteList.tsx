@@ -233,10 +233,10 @@ export function SoftDeleteList<TItem>({ config }: Readonly<{ config: SoftDeleteL
         }}
       />
 
-      <div className="rounded-xs border border-slate-200 overflow-hidden bg-white">
+      <div className="overflow-hidden rounded-md border border-[var(--line)] bg-white shadow-[var(--card-shadow)]">
         <div className="overflow-x-auto">
           <Table>
-            <TableHeader className="bg-slate-50">
+            <TableHeader className="bg-[var(--surface-soft)]">
               {cloneHeadWithSelection(
                 head,
                 <>
@@ -253,7 +253,7 @@ export function SoftDeleteList<TItem>({ config }: Readonly<{ config: SoftDeleteL
 
               {!listQuery.isLoading && !listQuery.isError && displayedRows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={99} className="h-24 text-slate-500 text-center">
+                  <TableCell colSpan={99} className="h-24 text-center text-[var(--muted)]">
                     {tab === "active"
                       ? `No ${config.title.toLowerCase()} records found.`
                       : `No deleted ${config.title.toLowerCase()} records found.`}

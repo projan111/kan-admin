@@ -1,28 +1,51 @@
-export function TableShimmer() {
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/table";
+
+type Props = Readonly<{
+  columns?: number;
+  rows?: number;
+  titleWidthClassName?: string;
+  actionWidthClassName?: string;
+}>;
+
+export function TableShimmer({
+  columns = 7,
+  rows = 5,
+  titleWidthClassName = "w-48",
+  actionWidthClassName = "w-28",
+}: Props) {
   return (
-    <div className="w-full">
-      <div className="flex justify-between items-center mb-4">
-        <div className="w-56 h-10 bg-gray-200 rounded-xs animate-pulse" />
-        <div className="w-28 h-10 bg-gray-200 rounded-xs animate-pulse" />
+    <section className="overflow-hidden rounded-md border border-[var(--line)] bg-white shadow-[var(--card-shadow)]">
+      <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] bg-[var(--surface-soft)] px-5 py-4">
+        <div className={`h-5 animate-pulse rounded-full bg-[var(--surface-strong)] ${titleWidthClassName}`} />
+        <div className={`h-9 animate-pulse rounded-full bg-[var(--surface-strong)] ${actionWidthClassName}`} />
       </div>
-      <div className="w-full border rounded-xs overflow-hidden">
-        <div className="grid grid-cols-7 bg-zinc-50 border-b">
-          {Array.from({ length: 7 }).map((_, i) => (
-            <div key={i} className="p-3">
-              <div className="w-full h-5 bg-gray-200 rounded animate-pulse" />
-            </div>
-          ))}
-        </div>
-        {Array.from({ length: 5 }).map((_, r) => (
-          <div key={r} className="grid grid-cols-7 border-b">
-            {Array.from({ length: 7 }).map((__, c) => (
-              <div key={c} className="p-3">
-                <div className="w-full h-5 bg-gray-200 rounded animate-pulse" />
-              </div>
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              {Array.from({ length: columns }).map((_, index) => (
+                <TableHead key={index}>
+                  <div className="h-4 w-full animate-pulse rounded-full bg-[var(--surface-strong)]" />
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: rows }).map((_, rowIndex) => (
+              <TableRow key={rowIndex}>
+                {Array.from({ length: columns }).map((__, cellIndex) => (
+                  <TableCell key={cellIndex}>
+                    <div
+                      className="h-4 animate-pulse rounded-full bg-[var(--surface-strong)]"
+                      style={{ width: `${Math.max(48, 92 - cellIndex * 6)}%` }}
+                    />
+                  </TableCell>
+                ))}
+              </TableRow>
             ))}
-          </div>
-        ))}
+          </TableBody>
+        </Table>
       </div>
-    </div>
+    </section>
   );
 }

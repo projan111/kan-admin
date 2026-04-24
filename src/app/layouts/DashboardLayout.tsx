@@ -60,7 +60,7 @@ export const DashboardLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-transparent">
+    <div className="dashboard-shell min-h-screen bg-transparent">
       <div className="flex min-h-screen">
         <Sidebar
           canUsersManage={canUsersManage}
@@ -69,7 +69,7 @@ export const DashboardLayout: React.FC = () => {
           onCloseMobile={() => setMobileOpen(false)}
           unreadContactsCount={unreadContacts.length}
         />
-        <main className="relative flex-1">
+        <main className="relative min-w-0 flex-1">
           <TopNav
             displayName={displayName}
             roleLabel={state.role ?? "USER"}
@@ -88,11 +88,11 @@ export const DashboardLayout: React.FC = () => {
             unreadContactsCount={unreadContacts.length}
             unreadContacts={unreadContacts}
           />
-          <div className="p-4 md:p-6">
-            <div className="mb-4 rounded-xl border border-white/65 bg-white/80 px-3 py-2 text-sm shadow-[var(--card-shadow)] backdrop-blur">
+          <div className="mx-auto w-full max-w-375 px-4 py-4 md:px-6 md:py-6">
+            <div className="mb-5 rounded-2xl border border-white/70 bg-white/82 px-4 py-3 text-sm shadow-[var(--card-shadow)] backdrop-blur">
               <Breadcrumbs />
             </div>
-            <div className="premium-animate-in">
+            <div className="premium-animate-in min-w-0">
               <Outlet />
             </div>
           </div>

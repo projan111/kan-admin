@@ -1,4 +1,5 @@
 import React from "react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/table";
 
 type Column<T> = Readonly<{
   key: string;
@@ -8,44 +9,50 @@ type Column<T> = Readonly<{
 
 type Props<T> = Readonly<{
   title: string;
+  description?: string;
+  actions?: React.ReactNode;
   columns: ReadonlyArray<Column<T>>;
   rows: ReadonlyArray<T>;
   emptyLabel?: string;
 }>;
 
-export function DataTable<T>({ title, columns, rows, emptyLabel }: Props<T>) {
+export function DataTable<T>({ title, description, actions, columns, rows, emptyLabel }: Props<T>) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-white/70 bg-white/92 shadow-[var(--card-shadow)]">
-      <header className="border-b border-[var(--line)]/80 bg-[var(--surface-soft)] px-5 py-4">
-        <h3 className="text-sm font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{title}</h3>
+    <section className="overflow-hidden rounded-md border border-[var(--line)] bg-white shadow-[var(--card-shadow)]">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)]/80 bg-[var(--surface-soft)] px-5 py-4">
+        <div>
+          <h3 className="text-sm font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{title}</h3>
+          {description ? <p className="mt-1 text-sm text-[var(--muted)]">{description}</p> : null}
+        </div>
+        {actions}
       </header>
       <div className="overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead>
-            <tr className="text-left text-[var(--muted)]">
+        <Table className="min-w-full text-sm">
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
               {columns.map((col) => (
-                <th key={col.key} className="px-5 py-3 font-semibold">{col.title}</th>
+                <TableHead key={col.key}>{col.title}</TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {rows.length === 0 ? (
-              <tr>
-                <td className="px-5 py-10 text-center text-sm text-[var(--muted)]" colSpan={columns.length}>
+              <TableRow>
+                <TableCell className="px-5 py-10 text-center text-sm text-[var(--muted)]" colSpan={columns.length}>
                   {emptyLabel ?? "No data"}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ) : (
               rows.map((row, i) => (
-                <tr key={i} className="border-t border-[var(--line)]/70 transition-colors hover:bg-[var(--surface-soft)]/80">
+                <TableRow key={i}>
                   {columns.map((col) => (
-                    <td key={col.key} className="px-5 py-3 text-[var(--text)]">{col.render(row)}</td>
+                    <TableCell key={col.key}>{col.render(row)}</TableCell>
                   ))}
-                </tr>
+                </TableRow>
               ))
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </section>
   );
