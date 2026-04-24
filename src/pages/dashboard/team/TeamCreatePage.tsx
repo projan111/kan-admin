@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useCreateTeam } from "@/features/team";
 import { FormLayout } from "@/shared/components/forms/FormLayout";
 import { EntityFormRenderer, type EntityFieldConfig } from "@/shared/components/forms/EntityFormRenderer";
+import { Button } from "@/shared/components/ui/button";
 import { useEntityForm } from "@/shared/hooks/useEntityForm";
 import { queryClient } from "@/shared/api/queryClient";
 
@@ -68,7 +69,10 @@ export const TeamCreatePage: React.FC = () => {
       <form onSubmit={(e) => { e.preventDefault(); void form.submit(); }} style={{ display: "grid", gap: 12 }}>
         <EntityFormRenderer fields={fields} values={form.values as Record<string, unknown>} errors={form.errors} onFieldChange={(name, value) => form.setField(name as keyof FormValues, value as never)} />
         {imagePreview ? <img src={imagePreview} alt="Preview" style={{ width: 140, height: 140, objectFit: "cover", borderRadius: 10, border: "1px solid #eee" }} /> : null}
-        <div style={{ display: "flex", gap: 8 }}><button type="submit" disabled={form.isSubmitting}>{form.isSubmitting ? "Saving..." : "Create"}</button><button type="button" onClick={() => navigate('/dashboard/team')}>Cancel</button></div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button type="submit" disabled={form.isSubmitting}>{form.isSubmitting ? "Saving..." : "Create"}</Button>
+          <Button type="button" variant="outline" onClick={() => navigate('/dashboard/team')}>Cancel</Button>
+        </div>
       </form>
     </FormLayout>
   );

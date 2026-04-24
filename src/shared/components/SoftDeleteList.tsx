@@ -233,7 +233,7 @@ export function SoftDeleteList<TItem>({ config }: Readonly<{ config: SoftDeleteL
         }}
       />
 
-      <div className="overflow-hidden rounded-md border border-[var(--line)] bg-white shadow-[var(--card-shadow)]">
+      <div className="overflow-hidden rounded-[18px] border border-[var(--line)] bg-white">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader className="bg-[var(--surface-soft)]">
@@ -282,7 +282,7 @@ export function SoftDeleteList<TItem>({ config }: Readonly<{ config: SoftDeleteL
                     </TableCell>
                     {reorderEnabled ? (
                       <TableCell onClick={(e) => e.stopPropagation()}>
-                        <GripVertical size={14} className="text-slate-400" />
+                        <GripVertical size={14} className="text-[var(--muted)]" />
                       </TableCell>
                     ) : null}
                     {config.renderRow(row)}

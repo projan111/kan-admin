@@ -4,6 +4,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useResetPassword } from "@/features/auth";
 import { useToast } from "@/shared/components/feedback/ToastProvider";
 import { parseApiError } from "@/shared/utils/apiError";
+import { Button } from "@/shared/components/ui/button";
 
 export const ResetPasswordPage: React.FC = () => {
   const nav = useNavigate();
@@ -40,14 +41,16 @@ export const ResetPasswordPage: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             style={{ width: "100%", paddingRight: 34 }}
           />
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => setShowPassword((v) => !v)}
             aria-label={showPassword ? "Hide password" : "Show password"}
-            style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", border: "none", background: "transparent", color: "#64748b", padding: 2, cursor: "pointer" }}
+            className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 border-none bg-transparent p-0 text-[var(--muted)] shadow-none hover:bg-transparent"
           >
             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-          </button>
+          </Button>
         </div>
         <div style={{ position: "relative" }}>
           <input
@@ -57,14 +60,16 @@ export const ResetPasswordPage: React.FC = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             style={{ width: "100%", paddingRight: 34 }}
           />
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => setShowConfirmPassword((v) => !v)}
             aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-            style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", border: "none", background: "transparent", color: "#64748b", padding: 2, cursor: "pointer" }}
+            className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 border-none bg-transparent p-0 text-[var(--muted)] shadow-none hover:bg-transparent"
           >
             {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-          </button>
+          </Button>
         </div>
         <button type="submit" disabled={reset.isPending}>{reset.isPending ? "Resetting..." : "Reset Password"}</button>
       </form>

@@ -63,7 +63,7 @@ export const FaqViewPage: React.FC = () => {
             to={`/dashboard/faq/${slug}/edit`}
             title="Edit FAQ"
             aria-label="Edit FAQ"
-            style={{ width: 36, height: 36, borderRadius: 999, border: "1px solid var(--primary)", color: "#fff", background: "linear-gradient(180deg, var(--primary) 0%, var(--primary-strong) 100%)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+            style={{ width: 36, height: 36, borderRadius: 8, border: "1px solid var(--primary)", color: "#fff", background: "var(--primary)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
           >
             <Pencil size={15} />
           </Link>
@@ -71,7 +71,7 @@ export const FaqViewPage: React.FC = () => {
             to="/dashboard/faq"
             title="Back"
             aria-label="Back"
-            style={{ width: 36, height: 36, borderRadius: 999, border: "1px solid var(--line)", color: "var(--text)", background: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+            style={{ width: 36, height: 36, borderRadius: 8, border: "1px solid var(--line)", color: "var(--text)", background: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
           >
             <ArrowLeft size={15} />
           </Link>

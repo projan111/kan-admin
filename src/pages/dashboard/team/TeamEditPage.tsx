@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTeamGet, useTeamList, useUpdateTeam } from "@/features/team";
 import { FormLayout } from "@/shared/components/forms/FormLayout";
 import { EntityFormRenderer, type EntityFieldConfig } from "@/shared/components/forms/EntityFormRenderer";
+import { Button } from "@/shared/components/ui/button";
 import { useEntityForm } from "@/shared/hooks/useEntityForm";
 import { slugify } from "@/shared/utils/slug";
 
@@ -105,7 +106,10 @@ export const TeamEditPage: React.FC = () => {
                 null,
           }}
         />
-        <div style={{ display: "flex", gap: 8 }}><button type="submit" disabled={form.isSubmitting}>{form.isSubmitting ? "Saving..." : "Update"}</button><button type="button" onClick={() => navigate('/dashboard/team')}>Cancel</button></div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button type="submit" disabled={form.isSubmitting}>{form.isSubmitting ? "Saving..." : "Update"}</Button>
+          <Button type="button" variant="outline" onClick={() => navigate('/dashboard/team')}>Cancel</Button>
+        </div>
       </form>
     </FormLayout>
   );

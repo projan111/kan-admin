@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useNewsroomGet, useNewsroomList, useUpdateNewsroom } from "@/features/newsroom";
 import { FormLayout } from "@/shared/components/forms/FormLayout";
 import { EntityFormRenderer, type EntityFieldConfig } from "@/shared/components/forms/EntityFormRenderer";
+import { Button } from "@/shared/components/ui/button";
 import { useEntityForm } from "@/shared/hooks/useEntityForm";
 import { slugify } from "@/shared/utils/slug";
 
@@ -58,5 +59,8 @@ return <FormLayout title='Edit Newsroom'><form onSubmit={(e)=>{e.preventDefault(
       mediaAssets: (q.data?.mediaAssets ?? []).filter((asset) => !removedMediaAssetIds.includes(asset.id)),
     }}
   />
-  <div style={{display:'flex',gap:8}}><button type='submit'>Update</button><button type='button' onClick={()=>nav('/dashboard/newsroom')}>Cancel</button></div>
+  <div style={{display:'flex',gap:8}}>
+    <Button type="submit">Update</Button>
+    <Button type="button" variant="outline" onClick={() => nav('/dashboard/newsroom')}>Cancel</Button>
+  </div>
 </form></FormLayout>; };

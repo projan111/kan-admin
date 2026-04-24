@@ -16,7 +16,7 @@ export const SoftDeleteListPagination: React.FC<Props> = ({ page, totalPages, on
     <Button type="button" variant="outline" size="icon" disabled={page <= 1} onClick={() => onPageChange(Math.max(1, page - 1))}>
       <ChevronLeft size={14} />
     </Button>
-    <span className="text-sm text-slate-600">{page}/{Math.max(1, totalPages)}</span>
+    <span className="text-sm text-[var(--muted)]">{page}/{Math.max(1, totalPages)}</span>
     <Button type="button" variant="outline" size="icon" disabled={page >= totalPages} onClick={() => onPageChange(Math.min(totalPages, page + 1))}>
       <ChevronRight size={14} />
     </Button>

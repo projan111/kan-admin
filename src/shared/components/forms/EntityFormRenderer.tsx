@@ -1,6 +1,7 @@
 import React from "react";
 import { Eye, EyeOff, Trash2 } from "lucide-react";
 import RichTextEditor from "@/shared/components/RichTextEditor";
+import { Button } from "@/shared/components/ui/button";
 
 export type EntityFieldOption = Readonly<{ label: string; value: string }>;
 
@@ -96,17 +97,7 @@ const FileInputField: React.FC<Readonly<{
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          style={{
-            padding: "0 12px",
-            height: 32,
-            borderRadius: 0,
-            border: "1px solid #cbd5e1",
-            background: "#f1f5f9",
-            color: "#334155",
-            fontWeight: 600,
-            fontSize: 12,
-            cursor: "pointer",
-          }}
+          className="inline-flex h-8 items-center rounded-[8px] border border-[var(--line)] bg-[var(--surface-soft)] px-3 text-[12px] font-semibold text-[var(--text)] transition-colors hover:bg-[var(--surface-strong)]"
         >
           {field.multiple ? "Add Files" : "Choose File"}
         </button>
@@ -170,9 +161,9 @@ const FileInputField: React.FC<Readonly<{
                     width: 20,
                     height: 20,
                     borderRadius: "50%",
-                    border: "1px solid #fecaca",
-                    background: "#fff1f2",
-                    color: "#be123c",
+                    border: "1px solid #f3b3b8",
+                    background: "#fff2f3",
+                    color: "#b42318",
                     fontWeight: 700,
                     lineHeight: 1,
                     cursor: "pointer",
@@ -193,9 +184,9 @@ const FileInputField: React.FC<Readonly<{
                     width: 20,
                     height: 20,
                     borderRadius: "50%",
-                    border: "1px solid #fecaca",
-                    background: "#fff1f2",
-                    color: "#be123c",
+                    border: "1px solid #f3b3b8",
+                    background: "#fff2f3",
+                    color: "#b42318",
                     fontWeight: 700,
                     lineHeight: 1,
                     cursor: "pointer",
@@ -218,12 +209,12 @@ const FileInputField: React.FC<Readonly<{
 export const EntityFormRenderer: React.FC<Props> = ({ fields, values, errors, onFieldChange, filePreviewUrls, onRemoveExistingPreview }) => {
   const [passwordVisible, setPasswordVisible] = React.useState<Record<string, boolean>>({});
   const fieldInputStyle: React.CSSProperties = {
-    padding: "8px 10px",
-    borderRadius: 0,
-    border: "1px solid #cbd5e1",
+    padding: "10px 12px",
+    borderRadius: 8,
+    border: "1px solid var(--line)",
     background: "#ffffff",
-    boxShadow: "inset 0 1px 0 rgba(15,23,42,0.02)",
-    fontSize: 13,
+    fontSize: 14,
+    color: "var(--text)",
   };
 
   const isWideField = (field: EntityFieldConfig): boolean =>
@@ -267,7 +258,7 @@ export const EntityFormRenderer: React.FC<Props> = ({ fields, values, errors, on
       {fields.map((f) => {
         if (f.type === "checkbox") {
           return (
-            <label key={f.name} style={{ gridColumn: "1 / -1", display: "flex", gap: 8, alignItems: "center", padding: "8px 10px", border: "1px solid var(--line)", borderRadius: 0, background: "var(--surface-2)" }}>
+            <label key={f.name} style={{ gridColumn: "1 / -1", display: "flex", gap: 8, alignItems: "center", padding: "10px 12px", border: "1px solid var(--line)", borderRadius: 8, background: "var(--surface-soft)" }}>
               <input
                 type="checkbox"
                 checked={Boolean(values[f.name])}
@@ -351,24 +342,16 @@ export const EntityFormRenderer: React.FC<Props> = ({ fields, values, errors, on
                   onChange={(e) => onFieldChange(f.name, e.target.value)}
                   style={{ ...fieldInputStyle, paddingRight: 34, width: "100%" }}
                 />
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setPasswordVisible((prev) => ({ ...prev, [f.name]: !prev[f.name] }))}
                   aria-label={passwordVisible[f.name] ? "Hide password" : "Show password"}
-                  style={{
-                    position: "absolute",
-                    right: 8,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    border: "none",
-                    background: "transparent",
-                    cursor: "pointer",
-                    padding: 2,
-                    color: "#64748b",
-                  }}
+                  className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 border-none bg-transparent p-0 text-[var(--muted)] shadow-none hover:bg-transparent"
                 >
                   {passwordVisible[f.name] ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
+                </Button>
               </div>
             ) : (
               <input

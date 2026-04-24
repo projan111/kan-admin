@@ -3,6 +3,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useChangePassword } from "@/features/auth";
 import { useToast } from "@/shared/components/feedback/ToastProvider";
 import { parseApiError } from "@/shared/utils/apiError";
+import { Button } from "@/shared/components/ui/button";
 
 export const ChangePasswordPage: React.FC = () => {
   const toast = useToast();
@@ -39,9 +40,9 @@ export const ChangePasswordPage: React.FC = () => {
             onChange={(e) => setCurrentPassword(e.target.value)}
             style={{ width: "100%", border: "1px solid var(--line)", background: "#fff", borderRadius: 10, padding: "10px 40px 10px 12px" }}
           />
-          <button type="button" onClick={() => setShowCurrent((v) => !v)} aria-label={showCurrent ? "Hide current password" : "Show current password"} style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", border: "none", background: "transparent", color: "#64748b", padding: 4 }}>
+          <Button type="button" variant="ghost" size="icon" onClick={() => setShowCurrent((v) => !v)} aria-label={showCurrent ? "Hide current password" : "Show current password"} className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 border-none bg-transparent p-0 text-[var(--muted)] shadow-none hover:bg-transparent">
             {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
-          </button>
+          </Button>
         </div>
         <div style={{ position: "relative" }}>
           <input
@@ -51,9 +52,9 @@ export const ChangePasswordPage: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             style={{ width: "100%", border: "1px solid var(--line)", background: "#fff", borderRadius: 10, padding: "10px 40px 10px 12px" }}
           />
-          <button type="button" onClick={() => setShowNext((v) => !v)} aria-label={showNext ? "Hide new password" : "Show new password"} style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", border: "none", background: "transparent", color: "#64748b", padding: 4 }}>
+          <Button type="button" variant="ghost" size="icon" onClick={() => setShowNext((v) => !v)} aria-label={showNext ? "Hide new password" : "Show new password"} className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 border-none bg-transparent p-0 text-[var(--muted)] shadow-none hover:bg-transparent">
             {showNext ? <EyeOff size={16} /> : <Eye size={16} />}
-          </button>
+          </Button>
         </div>
         <div style={{ position: "relative" }}>
           <input
@@ -63,9 +64,9 @@ export const ChangePasswordPage: React.FC = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             style={{ width: "100%", border: "1px solid var(--line)", background: "#fff", borderRadius: 10, padding: "10px 40px 10px 12px" }}
           />
-          <button type="button" onClick={() => setShowConfirm((v) => !v)} aria-label={showConfirm ? "Hide confirm password" : "Show confirm password"} style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", border: "none", background: "transparent", color: "#64748b", padding: 4 }}>
+          <Button type="button" variant="ghost" size="icon" onClick={() => setShowConfirm((v) => !v)} aria-label={showConfirm ? "Hide confirm password" : "Show confirm password"} className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 border-none bg-transparent p-0 text-[var(--muted)] shadow-none hover:bg-transparent">
             {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
-          </button>
+          </Button>
         </div>
         <button type="submit" disabled={change.isPending}>{change.isPending ? "Updating..." : "Change Password"}</button>
       </form>

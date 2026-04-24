@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../app/providers/AuthContext";
+import { Button } from "@/shared/components/ui/button";
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email is required").email("Enter a valid email"),
@@ -97,42 +98,21 @@ export const LoginPage: React.FC = () => {
               autoComplete="current-password"
               style={{ width: "100%", padding: "10px 40px 10px 10px", borderRadius: 10, border: "1px solid #ddd" }}
             />
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? "Hide password" : "Show password"}
-              style={{
-                position: "absolute",
-                right: 8,
-                top: "50%",
-                transform: "translateY(-50%)",
-                border: "none",
-                background: "transparent",
-                color: "#64748b",
-                padding: 4,
-                cursor: "pointer",
-              }}
+              className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 border-none bg-transparent p-0 text-[var(--muted)] shadow-none hover:bg-transparent"
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
+            </Button>
           </div>
           {errors.password ? <span style={{ color: "crimson", fontSize: 12 }}>{errors.password}</span> : null}
         </label>
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          style={{
-            padding: 12,
-            borderRadius: 12,
-            border: "1px solid var(--primary)",
-            background: "linear-gradient(180deg, var(--primary) 0%, var(--primary-strong) 100%)",
-            color: "white",
-            fontWeight: 700,
-            cursor: "pointer",
-            opacity: isSubmitting ? 0.7 : 1,
-          }}
-        >
+        <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Signing in..." : "Sign in"}
         </button>
 

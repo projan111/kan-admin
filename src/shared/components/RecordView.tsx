@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Pencil } from "lucide-react";
+import { buttonVariants } from "@/shared/components/ui/button";
 
 type Props = Readonly<{
   title: string;
@@ -87,16 +88,16 @@ export const RecordView: React.FC<Props> = ({ title, backHref, editHref, data })
   };
 
   return (
-    <div style={{ display: "grid", gap: 12, maxWidth: 980, width: "100%" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 4px" }}>
-        <h2 style={{ margin: 0, fontSize: 24, fontWeight: 900 }}>{title}</h2>
-        <div style={{ display: "flex", gap: 8 }}>
+    <div className="grid w-full max-w-245 gap-3">
+      <div className="flex items-center justify-between gap-4 px-1">
+        <h2 className="m-0 text-[24px] font-semibold tracking-[-0.03em] text-(--text)">{title}</h2>
+        <div className="flex gap-2">
           {editHref ? (
             <Link
               to={editHref}
               title="Edit"
               aria-label="Edit"
-              style={{ width: 36, height: 36, border: "1px solid var(--line)", background: "#eef2ff", color: "var(--primary)", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 999 }}
+              className={buttonVariants({ variant: "outline", size: "icon", className: "h-9 w-9" })}
             >
               <Pencil size={15} />
             </Link>
@@ -105,17 +106,17 @@ export const RecordView: React.FC<Props> = ({ title, backHref, editHref, data })
             to={backHref}
             title="Back"
             aria-label="Back"
-            style={{ width: 36, height: 36, border: "1px solid var(--line)", background: "#fff", color: "var(--text)", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 999 }}
+            className={buttonVariants({ variant: "outline", size: "icon", className: "h-9 w-9" })}
           >
             <ArrowLeft size={15} />
           </Link>
         </div>
       </div>
-      <div style={{ border: "1px solid var(--line)", borderRadius: 2, background: "var(--surface)", overflow: "hidden" }}>
+      <div className="overflow-hidden rounded-[18px] border border-(--line) bg-(--surface)">
         {Object.entries(data).map(([k, v]) => (
-          <div key={k} style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: 8, padding: "10px 12px", borderBottom: "1px solid var(--line)" }}>
-            <div style={{ color: "var(--muted)", fontSize: 13 }}>{k}</div>
-            <div style={{ fontWeight: 600, whiteSpace: "pre-wrap" }}>
+          <div key={k} className="grid gap-2 border-b border-(--line) px-4 py-3 last:border-b-0 md:grid-cols-[220px_1fr]">
+            <div className="text-[13px] text-(--muted)">{k}</div>
+            <div className="whitespace-pre-wrap font-medium text-(--text)">
               {renderValue(k, v)}
             </div>
           </div>

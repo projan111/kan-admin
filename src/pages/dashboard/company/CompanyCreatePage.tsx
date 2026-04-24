@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useCreateCompany } from "@/features/company";
 import { FormLayout } from "@/shared/components/forms/FormLayout";
 import { EntityFormRenderer, type EntityFieldConfig } from "@/shared/components/forms/EntityFormRenderer";
+import { Button } from "@/shared/components/ui/button";
 import { useEntityForm } from "@/shared/hooks/useEntityForm";
 import { slugify } from "@/shared/utils/slug";
 
@@ -47,6 +48,9 @@ export const CompanyCreatePage: React.FC = () => {
   }, [form, slugManuallyEdited]);
   return <FormLayout title="Create Company"><form onSubmit={(e)=>{e.preventDefault(); void form.submit();}} style={{display:'grid',gap:10}}>
     <EntityFormRenderer fields={fields} values={form.values as Record<string, unknown>} errors={form.errors} onFieldChange={handleFieldChange} />
-    <div style={{display:'flex',gap:8}}><button type='submit'>Create</button><button type='button' onClick={()=>nav('/dashboard/company')}>Cancel</button></div>
+    <div style={{display:'flex',gap:8}}>
+      <Button type="submit">Create</Button>
+      <Button type="button" variant="outline" onClick={() => nav('/dashboard/company')}>Cancel</Button>
+    </div>
   </form></FormLayout>;
 };

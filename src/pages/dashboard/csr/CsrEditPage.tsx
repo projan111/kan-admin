@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useCsrGet, useCsrList, useUpdateCsr } from "@/features/csr";
 import { FormLayout } from "@/shared/components/forms/FormLayout";
 import { EntityFormRenderer, type EntityFieldConfig } from "@/shared/components/forms/EntityFormRenderer";
+import { Button } from "@/shared/components/ui/button";
 import { useEntityForm } from "@/shared/hooks/useEntityForm";
 import { slugify } from "@/shared/utils/slug";
 
@@ -169,22 +170,13 @@ export const CsrEditPage: React.FC = () => {
           }}
         />
         <div style={{ display: "flex", gap: 8 }}>
-          <button
-            type="submit"
-            disabled={form.isSubmitting || m.isPending}
-            className="bg-primary text-white px-4 py-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
-          >
+          <Button type="submit" disabled={form.isSubmitting || m.isPending}>
             {form.isSubmitting || m.isPending ? <Loader2 size={14} className="animate-spin" /> : null}
             {form.isSubmitting || m.isPending ? "Updating..." : "Update"}
-          </button>
-          <button
-            type="button"
-            disabled={form.isSubmitting || m.isPending}
-            className="border-primary border px-4 py-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-            onClick={() => nav("/dashboard/csr")}
-          >
+          </Button>
+          <Button type="button" variant="outline" disabled={form.isSubmitting || m.isPending} onClick={() => nav("/dashboard/csr")}>
             Cancel
-          </button>
+          </Button>
         </div>
       </form>
     </FormLayout>

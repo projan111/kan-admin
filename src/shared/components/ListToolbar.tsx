@@ -1,6 +1,6 @@
 import React from "react";
 import { RefreshIcon } from "./AppIcons";
-import { ui } from "@/shared/styles/ui";
+import { Button } from "@/shared/components/ui/button";
 
 type Props = Readonly<{
   title: string;
@@ -50,16 +50,16 @@ export const ListToolbar: React.FC<Props> = ({
           <option value={50}>50</option>
         </select>
 
-        <button
+        <Button
           type="button"
           onClick={onRefresh}
           disabled={isRefreshing}
           title={isRefreshing ? "Refreshing..." : "Refresh"}
           aria-label={isRefreshing ? "Refreshing..." : "Refresh"}
-          style={{ ...ui.btnPrimary, opacity: isRefreshing ? 0.7 : 1, width: 38, height: 38, padding: 0, display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+          size="icon"
         >
           <RefreshIcon size={14} />
-        </button>
+        </Button>
       </div>
     </div>
   );

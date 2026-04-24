@@ -2,26 +2,26 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --bg: #f2f5fa;
+  --bg: #f5f5f7;
   --surface: #ffffff;
-  --surface-soft: #f8fbff;
-  --surface-strong: #e8eff9;
-  --text: #0e1726;
-  --muted: #5b6b82;
-  --line: #d8e1ee;
+  --surface-soft: #fafafc;
+  --surface-strong: #f0f0f2;
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --line: #d2d2d7;
 
-  --primary: #0f5bd8;
-  --primary-strong: #0a43a4;
-  --accent: #ff8d4d;
+  --primary: #0071e3;
+  --primary-strong: #0066cc;
+  --accent: #2997ff;
   --success: #0f9f78;
-  --danger: #cf2f2f;
+  --danger: #b42318;
 
-  --panel-shadow: 0 22px 48px rgba(15, 32, 64, 0.12);
-  --card-shadow: 0 12px 26px rgba(15, 32, 64, 0.08);
+  --panel-shadow: 0 20px 44px rgba(0, 0, 0, 0.08);
+  --card-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
 
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
+  --radius-sm: 8px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
 }
 
 * {
@@ -38,11 +38,8 @@ body,
 body {
   margin: 0;
   color: var(--text);
-  background:
-    radial-gradient(1000px 580px at -8% -12%, rgba(15, 91, 216, 0.18) 0%, transparent 58%),
-    radial-gradient(780px 460px at 102% -10%, rgba(255, 141, 77, 0.18) 0%, transparent 64%),
-    linear-gradient(180deg, #f8fbff 0%, var(--bg) 68%);
-  font-family: "Satoshi", "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+  background: var(--bg);
+  font-family: "Inter", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
   font-size: 14px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
@@ -93,9 +90,9 @@ textarea {
 
 .auth-shell h1 {
   margin: 0;
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
 }
 
 .auth-shell form {
@@ -108,9 +105,9 @@ textarea {
 .auth-shell textarea {
   width: 100%;
   border: 1px solid var(--line);
-  background: var(--surface-soft);
+  background: #fff;
   border-radius: var(--radius-sm);
-  padding: 10px 12px;
+  padding: 11px 12px;
   outline: none;
 }
 
@@ -122,12 +119,45 @@ textarea {
 }
 
 .auth-shell a {
-  color: var(--primary);
+  color: #0066cc;
   text-decoration: none;
 }
 
 .auth-shell a:hover {
   text-decoration: underline;
+}
+
+.auth-shell button[type="submit"] {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  padding: 0 16px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease,
+    opacity 160ms ease;
+}
+
+.auth-shell button[type="submit"]:hover:not(:disabled) {
+  background: var(--primary-strong);
+  border-color: var(--primary-strong);
+}
+
+.auth-shell button[type="submit"]:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+.auth-shell button[type="submit"]:disabled {
+  cursor: not-allowed;
 }
 
 @keyframes fade-up {
@@ -147,31 +177,4 @@ textarea {
 
 .dashboard-shell {
   position: relative;
-  isolation: isolate;
-}
-
-.dashboard-shell::before,
-.dashboard-shell::after {
-  content: "";
-  position: fixed;
-  z-index: -1;
-  border-radius: 999px;
-  filter: blur(10px);
-  pointer-events: none;
-}
-
-.dashboard-shell::before {
-  top: 84px;
-  right: -160px;
-  height: 320px;
-  width: 320px;
-  background: radial-gradient(circle, rgba(15, 91, 216, 0.14) 0%, rgba(15, 91, 216, 0) 70%);
-}
-
-.dashboard-shell::after {
-  bottom: 40px;
-  left: -120px;
-  height: 260px;
-  width: 260px;
-  background: radial-gradient(circle, rgba(255, 141, 77, 0.14) 0%, rgba(255, 141, 77, 0) 72%);
 }

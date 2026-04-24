@@ -38,7 +38,7 @@ export const SoftDeleteListToolbar: React.FC<Props> = ({
   createLabel,
   canCreate,
 }) => (
-  <div className="flex flex-col sm:flex-row items-center justify-between py-1 gap-4">
+  <div className="flex flex-col items-center justify-between gap-4 py-1 sm:flex-row">
     <div className="flex items-center gap-2 w-full sm:w-auto">
       <Input
         placeholder={searchPlaceholder}
@@ -47,11 +47,11 @@ export const SoftDeleteListToolbar: React.FC<Props> = ({
         className="h-10 w-full bg-white sm:max-w-sm"
       />
     </div>
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <Button
         variant="outline"
         size="icon"
-        className="rounded-full bg-white border-none hover:bg-slate-100"
+        className="bg-white"
         onClick={onRefresh}
         disabled={isFetching}
       >
@@ -61,7 +61,7 @@ export const SoftDeleteListToolbar: React.FC<Props> = ({
         <select
           value={sortValue}
           onChange={(e) => onSortChange(e.target.value)}
-          className="h-9 rounded-md border border-[var(--line)] bg-white px-3 text-sm text-[var(--text)] outline-none transition-colors focus:border-[var(--primary)]"
+          className="h-10 rounded-[8px] border border-[var(--line)] bg-white px-3 text-sm text-[var(--text)] outline-none transition-colors focus:border-[var(--primary)]"
         >
           <option value="">Default</option>
           {sortOptions.map((opt) => (
@@ -82,10 +82,8 @@ export const SoftDeleteListToolbar: React.FC<Props> = ({
       {canCreate !== false && createHref ? (
         <Link to={createHref} className="inline-flex items-center">
           <Button>
-            <span className="inline-flex items-center gap-2">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/20"><Plus size={13} /></span>
-              {createLabel}
-            </span>
+            <Plus size={14} />
+            {createLabel}
           </Button>
         </Link>
       ) : null}

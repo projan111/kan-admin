@@ -35,8 +35,8 @@ export const SoftDeleteListBulkActions: React.FC<Props> = ({
   if (selectedCount <= 0) return null;
 
   return (
-    <div className="flex items-center gap-2 text-sm">
-      <span className="text-slate-600">{selectedCount} selected</span>
+    <div className="flex flex-wrap items-center gap-2 text-sm">
+      <span className="text-[var(--muted)]">{selectedCount} selected</span>
       <Button variant="outline" size="sm" onClick={onClear}>Clear</Button>
       {tab === "active" ? (
         canDelete === false ? null : (
@@ -45,7 +45,6 @@ export const SoftDeleteListBulkActions: React.FC<Props> = ({
             size="sm"
             onClick={onBulkDelete}
             disabled={deletePending}
-            className="outline-1 outline-red-500"
           >
             <Trash2 size={14} /><span className="ml-1">Delete Selected</span>
           </Button>

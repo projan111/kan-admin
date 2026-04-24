@@ -11,7 +11,7 @@ const Breadcrumbs = () => {
     <nav aria-label="Breadcrumb" className="flex items-center text-xs font-semibold uppercase tracking-[0.08em]">
       <ol className="flex items-center gap-1.5 text-[var(--muted)]">
         <li>
-          <Link to="/" className="flex items-center rounded-md p-1 transition-colors hover:bg-[var(--surface-soft)] hover:text-[var(--primary)]">
+          <Link to="/" className="flex items-center p-1 transition-colors hover:text-[var(--primary)]">
             <Home size={14} strokeWidth={2} />
           </Link>
         </li>

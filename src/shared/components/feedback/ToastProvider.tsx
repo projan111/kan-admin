@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React from "react";
 import { CheckCircle2, Info, TriangleAlert, X } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 
 type ToastKind = "success" | "error" | "info";
 
@@ -68,13 +69,15 @@ export const ToastProvider: React.FC<React.PropsWithChildren> = ({ children }) =
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               {t.kind === "success" ? <CheckCircle2 size={16} color="#166534" /> : t.kind === "error" ? <TriangleAlert size={16} color="#be123c" /> : <Info size={16} color="#0f172a" />}
               <div style={{ flex: 1 }}>{t.message}</div>
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => setToasts((prev) => prev.filter((x) => x.id !== t.id))}
-                style={{ border: "none", background: "transparent", padding: 8, display: "inline-flex", cursor: "pointer" }}
+                className="h-8 w-8 border-none bg-transparent p-0 text-[var(--muted)] shadow-none hover:bg-[var(--surface-soft)]"
               >
                 <X size={14} />
-              </button>
+              </Button>
             </div>
           </div>
         ))}

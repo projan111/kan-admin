@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useBrandGet, useBrandList, useUpdateBrand } from "@/features/brand";
 import { FormLayout } from "@/shared/components/forms/FormLayout";
 import { EntityFormRenderer, type EntityFieldConfig } from "@/shared/components/forms/EntityFormRenderer";
+import { Button } from "@/shared/components/ui/button";
 import { useEntityForm } from "@/shared/hooks/useEntityForm";
 import { slugify } from "@/shared/utils/slug";
 import ImageColorPalette from "@/shared/components/color-thief";
@@ -191,22 +192,13 @@ export const BrandEditPage: React.FC = () => {
           </div>
         ) : null}
         <div style={{ display: "flex", gap: 8 }}>
-          <button
-            type="submit"
-            disabled={form.isSubmitting || update.isPending}
-            className="bg-primary text-white px-4 py-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2"
-          >
+          <Button type="submit" disabled={form.isSubmitting || update.isPending}>
             {form.isSubmitting || update.isPending ? <Loader2 size={14} className="animate-spin" /> : null}
             {form.isSubmitting || update.isPending ? "Updating..." : "Update"}
-          </button>
-          <button
-            type="button"
-            disabled={form.isSubmitting || update.isPending}
-            className="border-primary border px-4 py-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-            onClick={() => navigate("/dashboard/brand")}
-          >
+          </Button>
+          <Button type="button" variant="outline" disabled={form.isSubmitting || update.isPending} onClick={() => navigate("/dashboard/brand")}>
             Cancel
-          </button>
+          </Button>
         </div>
       </form>
     </FormLayout>

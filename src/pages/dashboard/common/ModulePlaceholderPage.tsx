@@ -1,6 +1,6 @@
 import React from "react";
 import type { LucideIcon } from "lucide-react";
-import { ChevronLeft, ChevronRight, Copy, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Copy, Loader2, Pencil, Plus, Trash2, Upload, X } from "lucide-react";
 import { useListQueryState } from "@/shared/hooks/useListQueryState";
 import { confirmAction } from "@/shared/utils/confirm";
 import { Input } from "@/shared/components/ui/input";
@@ -100,12 +100,174 @@ const getInitials = (label: string) =>
     .join("")
     .toUpperCase();
 
+type PurchaseType = "Fixed Price" | "Timed Auction" | "Open for Bids";
+
+const purchaseTypes: ReadonlyArray<{ type: PurchaseType; description: string }> = [
+  { type: "Fixed Price", description: "Set fixed price for people to buy your product instantly" },
+  { type: "Timed Auction", description: "Set fixed price for people to buy your product instantly" },
+  { type: "Open for Bids", description: "Set fixed price for people to buy your product instantly" },
+];
+
+type CreateModalProps = Readonly<{
+  title: string;
+  onClose: () => void;
+  onSubmit: () => void;
+}>;
+
+const CreateItemModal: React.FC<CreateModalProps> = ({ title, onClose, onSubmit }) => {
+  const [purchaseType, setPurchaseType] = React.useState<PurchaseType>("Fixed Price");
+
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 pt-10"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="w-full max-w-3xl rounded-[14px] border border-[#d2d2d7] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between border-b border-[#d2d2d7] px-6 py-4">
+          <div>
+            <h2 className="text-[20px] font-semibold tracking-[-0.02em] text-[#1d1d1f]">Create {title}</h2>
+            <p className="mt-0.5 text-[13px] text-[#6e6e73]">Dashboard / Create {title}</p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid h-9 w-9 place-items-center rounded-[8px] border border-[#d2d2d7] text-[#6e6e73] hover:bg-[#f5f5f7]"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-6">
+          {/* Upload + Preview */}
+          <div className="grid gap-5 md:grid-cols-[1fr_220px]">
+            {/* Upload File */}
+            <div>
+              <p className="mb-2 text-[13px] font-semibold text-[#1d1d1f]">Upload File</p>
+              <div className="flex h-[180px] flex-col items-center justify-center gap-2 rounded-[10px] border-2 border-dashed border-[#d2d2d7] bg-[#fafafc] text-center transition-colors hover:border-[#0071e3] hover:bg-[#f0f5ff]">
+                <div className="grid h-11 w-11 place-items-center rounded-[10px] border border-[#d2d2d7] bg-white text-[#6e6e73]">
+                  <Upload size={20} />
+                </div>
+                <p className="text-[12px] text-[#6e6e73]">Max 120 MB, PNG, JPEG, MP3, MP4</p>
+                <button
+                  type="button"
+                  className="mt-1 rounded-[8px] bg-[#1d1d1f] px-4 py-2 text-[13px] font-semibold text-white hover:bg-black"
+                >
+                  Browse File
+                </button>
+              </div>
+            </div>
+
+            {/* Preview */}
+            <div>
+              <p className="mb-2 text-[13px] font-semibold text-[#1d1d1f]">Preview File</p>
+              <div className="flex h-[180px] items-center justify-center rounded-[10px] border border-[#d2d2d7] bg-[#f5f5f7] text-[12px] text-[#6e6e73]">
+                No preview
+              </div>
+            </div>
+          </div>
+
+          {/* Purchase Type */}
+          <div>
+            <p className="mb-3 text-[15px] font-semibold text-[#1d1d1f]">Purchase Type</p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {purchaseTypes.map(({ type, description }) => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => setPurchaseType(type)}
+                  className={`rounded-[10px] border p-4 text-left transition-colors ${
+                    purchaseType === type
+                      ? "border-[#0071e3] bg-[#f0f5ff]"
+                      : "border-[#d2d2d7] bg-white hover:border-[#86868b]"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`grid h-4 w-4 place-items-center rounded-full border-2 ${purchaseType === type ? "border-[#0071e3]" : "border-[#86868b]"}`}>
+                      {purchaseType === type ? <span className="h-2 w-2 rounded-full bg-[#0071e3]" /> : null}
+                    </span>
+                    <span className="text-[13px] font-semibold text-[#1d1d1f]">{type}</span>
+                  </div>
+                  <p className="mt-2 text-[12px] leading-5 text-[#6e6e73]">{description}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Main Details */}
+          <div>
+            <p className="mb-4 text-[15px] font-semibold text-[#1d1d1f]">Main Details</p>
+            <div className="space-y-3">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1.5 block text-[12px] font-semibold text-[#1d1d1f]">Title</label>
+                  <input
+                    type="text"
+                    placeholder="Enter title"
+                    className="h-10 w-full rounded-[8px] border border-[#d2d2d7] bg-white px-3 text-[13px] text-[#1d1d1f] outline-none placeholder:text-[#86868b] focus:border-[#0071e3] focus:ring-1 focus:ring-[#0071e3]/20"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-[12px] font-semibold text-[#1d1d1f]">Price</label>
+                  <input
+                    type="text"
+                    placeholder="Enter price"
+                    className="h-10 w-full rounded-[8px] border border-[#d2d2d7] bg-white px-3 text-[13px] text-[#1d1d1f] outline-none placeholder:text-[#86868b] focus:border-[#0071e3] focus:ring-1 focus:ring-[#0071e3]/20"
+                  />
+                </div>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-4">
+                {["Size", "Properties", "Royalty", "Currency"].map((field) => (
+                  <div key={field}>
+                    <label className="mb-1.5 block text-[12px] font-semibold text-[#1d1d1f]">{field}</label>
+                    <input
+                      type="text"
+                      placeholder={`Enter ${field.toLowerCase()}`}
+                      className="h-10 w-full rounded-[8px] border border-[#d2d2d7] bg-white px-3 text-[13px] text-[#1d1d1f] outline-none placeholder:text-[#86868b] focus:border-[#0071e3] focus:ring-1 focus:ring-[#0071e3]/20"
+                    />
+                  </div>
+                ))}
+              </div>
+              <div>
+                <label className="mb-1.5 block text-[12px] font-semibold text-[#1d1d1f]">Description</label>
+                <textarea
+                  rows={4}
+                  placeholder="Enter description"
+                  className="w-full resize-y rounded-[8px] border border-[#d2d2d7] bg-white px-3 py-2.5 text-[13px] text-[#1d1d1f] outline-none placeholder:text-[#86868b] focus:border-[#0071e3] focus:ring-1 focus:ring-[#0071e3]/20"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Modal Footer */}
+        <div className="flex items-center justify-between border-t border-[#d2d2d7] px-6 py-4">
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={onSubmit}>
+            <Plus size={15} />
+            Create {title}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const ModulePlaceholderPage: React.FC<Props> = ({ title, description, icon: Icon, moduleKey }) => {
   const definition = fakeModuleDefinitions[moduleKey];
   const { state, setState, debouncedSearch } = useListQueryState({ page: 1, limit: 10, search: "" });
   const [rows, setRows] = React.useState<ReadonlyArray<FakeModuleRow>>(definition?.rows ?? []);
   const [selectedIds, setSelectedIds] = React.useState<ReadonlyArray<string>>([]);
   const [isMutating, setIsMutating] = React.useState(false);
+  const [isCreateOpen, setIsCreateOpen] = React.useState(false);
 
   React.useEffect(() => {
     setRows(definition?.rows ?? []);
@@ -156,16 +318,16 @@ export const ModulePlaceholderPage: React.FC<Props> = ({ title, description, ico
     setRows((prev) => [createMockRow(moduleKey, row, prev.length + 1), ...prev]);
   };
 
-  const onCreate = () => {
+  const onCreateSubmit = () => {
     const seed = definition.rows[0];
-    if (!seed) return;
-    setRows((prev) => [createMockRow(moduleKey, seed, prev.length + 1), ...prev]);
+    if (seed) setRows((prev) => [createMockRow(moduleKey, seed, prev.length + 1), ...prev]);
+    setIsCreateOpen(false);
   };
 
   const renderCell = (value: FakeCellValue) => {
     if (isImage(value)) {
       return (
-        <span className="grid h-11 w-11 place-items-center rounded-md border border-[#d2d2d7] bg-[linear-gradient(180deg,#ffffff_0%,#f5f5f7_100%)] text-[11px] font-semibold text-[var(--muted)]">
+        <span className="grid h-11 w-11 place-items-center rounded-md border border-[#d2d2d7] bg-[#f5f5f7] text-[11px] font-semibold text-(--muted)">
           {getInitials(value.label)}
         </span>
       );
@@ -195,138 +357,150 @@ export const ModulePlaceholderPage: React.FC<Props> = ({ title, description, ico
       );
     }
 
-    return <span className="text-[var(--text)]">{String(value ?? "-")}</span>;
+    return <span className="text-(--text)">{String(value ?? "-")}</span>;
   };
 
   if (!definition) {
-    return <div className="text-sm text-[var(--muted)]">No fake module data configured.</div>;
+    return <div className="text-sm text-(--muted)">No fake module data configured.</div>;
   }
 
   return (
-    <div className="flex w-full flex-col gap-4">
-      <section className="rounded-md border border-[#d2d2d7] bg-white px-5 py-4 shadow-[var(--card-shadow)]">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex items-start gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-[var(--primary)] to-[var(--primary-strong)] text-white">
-              <Icon size={20} />
-            </span>
-            <div>
-              <h1 className="text-2xl font-black tracking-tight text-[var(--text)]">{title}</h1>
-              <p className="mt-1 max-w-2xl text-sm text-[var(--muted)]">{description}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <div className="flex flex-col items-center justify-between gap-4 py-1 sm:flex-row">
-        <Input
-          placeholder={definition.searchPlaceholder}
-          value={state.search}
-          onChange={(event) => setState((prev) => ({ ...prev, page: 1, search: event.target.value }))}
-          className="h-10 w-full bg-white sm:max-w-sm"
+    <>
+      {isCreateOpen ? (
+        <CreateItemModal
+          title={title}
+          onClose={() => setIsCreateOpen(false)}
+          onSubmit={onCreateSubmit}
         />
-        <div className="flex items-center gap-2">
-          <Button onClick={onCreate}>
-            <span className="inline-flex items-center gap-2">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/20"><Plus size={13} /></span>
-              {definition.createLabel}
-            </span>
-          </Button>
-        </div>
-      </div>
-
-      {selectedIds.length > 0 ? (
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-[var(--muted)]">{selectedIds.length} selected</span>
-          <Button variant="outline" size="sm" onClick={() => setSelectedIds([])} disabled={isMutating}>Clear</Button>
-          <Button variant="destructive" size="sm" onClick={() => void onBulkDelete()} disabled={isMutating}>
-            {isMutating ? (
-              <span className="inline-flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Deleting...
-              </span>
-            ) : (
-              "Delete Selected"
-            )}
-          </Button>
-        </div>
       ) : null}
 
-      <div className="overflow-hidden rounded-md border border-[#d2d2d7] bg-white shadow-[var(--card-shadow)]">
-        <Table>
-          <TableHeader className="bg-[#f5f5f7]">
-            <TableRow>
-              <TableHead><Checkbox checked={isAllSelected} onCheckedChange={(checked) => setSelectedIds(Boolean(checked) ? visibleRows.map((row) => row.id) : [])} /></TableHead>
-              {definition.columns.map((column) => (
-                <TableHead key={column.key} className={column.align === "right" ? "text-right" : undefined}>{column.label}</TableHead>
-              ))}
-              <TableHead className="min-w-36 text-right">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {visibleRows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={definition.columns.length + 2} className="h-24 text-center text-[var(--muted)]">
-                  No {title.toLowerCase()} records found.
-                </TableCell>
-              </TableRow>
-            ) : null}
-            {visibleRows.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell>
-                  <Checkbox
-                    checked={selectedIds.includes(row.id)}
-                    onCheckedChange={(checked) => setSelectedIds((prev) => (checked ? [...new Set([...prev, row.id])] : prev.filter((id) => id !== row.id)))}
-                  />
-                </TableCell>
-                {definition.columns.map((column) => (
-                  <TableCell key={column.key} className={column.align === "right" ? "text-right" : undefined}>
-                    {renderCell(row[column.key])}
-                  </TableCell>
-                ))}
-                <TableCell className="min-w-36 text-right">
-                  <div className="flex items-center justify-end gap-2 whitespace-nowrap">
-                    <button
-                      type="button"
-                      onClick={() => onDuplicate(row)}
-                      className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#d2d2d7] bg-[#eef2f7] text-[#4b5563] transition-colors hover:bg-[#e2e8f0]"
-                      aria-label="Edit row"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        void onDelete(row.id);
-                      }}
-                      className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#fecdd3] bg-[#fff1f2] text-[#ef4444] transition-colors hover:bg-[#ffe4e6]"
-                      aria-label="Delete row"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onDuplicate(row)}
-                      className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#c7d2fe] bg-[#eef2ff] text-[#475569] transition-colors hover:bg-[#e0e7ff]"
-                      aria-label="Duplicate row"
-                    >
-                      <Copy className="h-4 w-4" />
-                    </button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <div className="flex w-full flex-col gap-4">
+        <section className="px-1 py-1">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <span className="grid h-11 w-11 place-items-center text-primary">
+                <Icon size={20} />
+              </span>
+              <div>
+                <h1 className="text-2xl font-black tracking-tight text-(--text)">{title}</h1>
+                <p className="mt-1 max-w-2xl text-sm text-(--muted)">{description}</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button variant="outline" size="icon" disabled={state.page <= 1} onClick={() => setState((prev) => ({ ...prev, page: 1 }))}><ChevronLeft size={14} /><ChevronLeft size={14} className="-ml-2" /></Button>
-        <Button variant="outline" size="icon" disabled={state.page <= 1} onClick={() => setState((prev) => ({ ...prev, page: Math.max(1, prev.page - 1) }))}><ChevronLeft size={14} /></Button>
-        <span className="text-sm text-[var(--muted)]">{state.page}/{totalPages}</span>
-        <Button variant="outline" size="icon" disabled={state.page >= totalPages} onClick={() => setState((prev) => ({ ...prev, page: Math.min(totalPages, prev.page + 1) }))}><ChevronRight size={14} /></Button>
-        <Button variant="outline" size="icon" disabled={state.page >= totalPages} onClick={() => setState((prev) => ({ ...prev, page: totalPages }))}><ChevronRight size={14} /><ChevronRight size={14} className="-ml-2" /></Button>
+        <div className="flex flex-col items-center justify-between gap-4 py-1 sm:flex-row">
+          <Input
+            placeholder={definition.searchPlaceholder}
+            value={state.search}
+            onChange={(event) => setState((prev) => ({ ...prev, page: 1, search: event.target.value }))}
+            className="h-10 w-full bg-white sm:max-w-sm"
+          />
+          <div className="flex items-center gap-2">
+            <Button onClick={() => setIsCreateOpen(true)}>
+              <Plus size={15} />
+              {definition.createLabel}
+            </Button>
+          </div>
+        </div>
+
+        {selectedIds.length > 0 ? (
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-(--muted)">{selectedIds.length} selected</span>
+            <Button variant="outline" size="sm" onClick={() => setSelectedIds([])} disabled={isMutating}>Clear</Button>
+            <Button variant="destructive" size="sm" onClick={() => void onBulkDelete()} disabled={isMutating}>
+              {isMutating ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Deleting...
+                </span>
+              ) : (
+                "Delete Selected"
+              )}
+            </Button>
+          </div>
+        ) : null}
+
+        <div className="overflow-hidden rounded-[12px] border border-[#d2d2d7] bg-white">
+          <Table>
+            <TableHeader className="bg-[#f5f5f7]">
+              <TableRow>
+                <TableHead><Checkbox checked={isAllSelected} onCheckedChange={(checked) => setSelectedIds(Boolean(checked) ? visibleRows.map((row) => row.id) : [])} /></TableHead>
+                {definition.columns.map((column) => (
+                  <TableHead key={column.key} className={column.align === "right" ? "text-right" : undefined}>{column.label}</TableHead>
+                ))}
+                <TableHead className="min-w-36 text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {visibleRows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={definition.columns.length + 2} className="h-24 text-center text-(--muted)">
+                    No {title.toLowerCase()} records found.
+                  </TableCell>
+                </TableRow>
+              ) : null}
+              {visibleRows.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedIds.includes(row.id)}
+                      onCheckedChange={(checked) => setSelectedIds((prev) => (checked ? [...new Set([...prev, row.id])] : prev.filter((id) => id !== row.id)))}
+                    />
+                  </TableCell>
+                  {definition.columns.map((column) => (
+                    <TableCell key={column.key} className={column.align === "right" ? "text-right" : undefined}>
+                      {renderCell(row[column.key])}
+                    </TableCell>
+                  ))}
+                  <TableCell className="min-w-36 text-right">
+                    <div className="flex items-center justify-end gap-2 whitespace-nowrap">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => onDuplicate(row)}
+                        className="h-8 w-8 rounded-[6px] bg-(--surface-soft) text-(--muted)"
+                        aria-label="Edit row"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => { void onDelete(row.id); }}
+                        className="h-8 w-8 rounded-[6px]"
+                        aria-label="Delete row"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => onDuplicate(row)}
+                        className="h-8 w-8 rounded-[6px] bg-(--surface-soft) text-(--muted)"
+                        aria-label="Duplicate row"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Button variant="outline" size="icon" disabled={state.page <= 1} onClick={() => setState((prev) => ({ ...prev, page: 1 }))}><ChevronLeft size={14} /><ChevronLeft size={14} className="-ml-2" /></Button>
+          <Button variant="outline" size="icon" disabled={state.page <= 1} onClick={() => setState((prev) => ({ ...prev, page: Math.max(1, prev.page - 1) }))}><ChevronLeft size={14} /></Button>
+          <span className="text-sm text-(--muted)">{state.page}/{totalPages}</span>
+          <Button variant="outline" size="icon" disabled={state.page >= totalPages} onClick={() => setState((prev) => ({ ...prev, page: Math.min(totalPages, prev.page + 1) }))}><ChevronRight size={14} /></Button>
+          <Button variant="outline" size="icon" disabled={state.page >= totalPages} onClick={() => setState((prev) => ({ ...prev, page: totalPages }))}><ChevronRight size={14} /><ChevronRight size={14} className="-ml-2" /></Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 };

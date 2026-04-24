@@ -15,10 +15,10 @@ type Props = Readonly<{
 }>;
 
 const baseLink =
-  "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[var(--muted)] transition-all hover:bg-[var(--surface-soft)] hover:text-[var(--text)]";
+  "group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold text-[var(--muted)] transition-colors hover:bg-[var(--surface-soft)] hover:text-[var(--text)]";
 
 const activeLink =
-  "bg-gradient-to-r from-[var(--primary)] to-[var(--primary-strong)] text-white! shadow-[0_8px_18px_rgba(15,91,216,0.32)] hover:text-white [&_svg]:text-white [&_span]:text-white";
+  "bg-[#1d1d1f] text-white! hover:bg-[#000000] hover:text-white [&_svg]:text-white [&_span]:text-white";
 
 export const Sidebar: React.FC<Props> = ({
   canUsersManage,
@@ -41,7 +41,7 @@ export const Sidebar: React.FC<Props> = ({
     .filter((group) => group.modules.length > 0);
 
   const content = (
-    <div className="flex h-full flex-col border-r border-white/70 bg-white/90 backdrop-blur">
+    <div className="flex h-full flex-col border-r border-(--line) bg-white">
       <div className="flex items-center justify-between border-b border-(--line)/70 px-5 py-4">
         <NavLink
           to="/dashboard"
@@ -49,7 +49,7 @@ export const Sidebar: React.FC<Props> = ({
           className="flex items-center gap-3"
           onClick={onCloseMobile}
         >
-          <span className="grid h-11 w-11 place-items-center rounded-2xl bg-linear-to-br from-primary to-(--primary-strong) text-sm font-black tracking-[0.16em] text-white shadow-[0_10px_24px_rgba(15,91,216,0.26)]">
+          <span className="grid h-11 w-11 place-items-center rounded-full border border-(--line) bg-(--surface-soft) text-sm font-black tracking-[0.16em] text-(--text)">
             EC
           </span>
           <span>
@@ -62,7 +62,7 @@ export const Sidebar: React.FC<Props> = ({
           </span>
         </NavLink>
         <button
-          className="grid h-9 w-9 place-items-center rounded-lg text-(--muted) hover:bg-(--surface-soft) md:hidden"
+          className="grid h-10 w-10 place-items-center rounded-full border border-(--line) bg-white text-(--muted) hover:bg-(--surface-soft) md:hidden"
           onClick={onCloseMobile}
         >
           <X size={20} strokeWidth={2} />
@@ -93,7 +93,7 @@ export const Sidebar: React.FC<Props> = ({
                       {module.label}
                     </span>
                     {isContact && unreadContactsCount > 0 ? (
-                      <span className="ml-auto rounded-full bg-(--accent) px-2 py-0.5 text-[10px] font-bold text-white">
+                      <span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-white">
                         {unreadContactsCount > 99 ? "99+" : unreadContactsCount}
                       </span>
                     ) : null}

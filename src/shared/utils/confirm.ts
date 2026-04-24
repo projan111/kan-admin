@@ -41,7 +41,7 @@ export async function confirmAction(message: string): Promise<boolean> {
     cancel.type = "button";
     cancel.textContent = "Cancel";
     cancel.style.padding = "8px 12px";
-    cancel.style.borderRadius = "999px";
+    cancel.style.borderRadius = "8px";
     cancel.style.border = "1px solid var(--line)";
     cancel.style.background = "#fff";
     cancel.style.cursor = "pointer";
@@ -50,7 +50,7 @@ export async function confirmAction(message: string): Promise<boolean> {
     confirm.type = "button";
     confirm.textContent = isDelete ? "Delete" : "Confirm";
     confirm.style.padding = "8px 12px";
-    confirm.style.borderRadius = "999px";
+    confirm.style.borderRadius = "8px";
     confirm.style.cursor = "pointer";
     if (isDelete) {
       confirm.style.border = "1px solid #fecaca";
@@ -58,7 +58,7 @@ export async function confirmAction(message: string): Promise<boolean> {
       confirm.style.color = "#be123c";
     } else {
       confirm.style.border = "1px solid var(--primary)";
-      confirm.style.background = "linear-gradient(180deg, var(--primary) 0%, var(--primary-strong) 100%)";
+      confirm.style.background = "var(--primary)";
       confirm.style.color = "#fff";
     }
 

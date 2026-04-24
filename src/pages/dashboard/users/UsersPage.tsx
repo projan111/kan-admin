@@ -59,10 +59,8 @@ export const UsersPage: React.FC = () => {
           {canCreate ? (
             <Link to="/dashboard/users/create" className="inline-flex items-center">
               <Button>
-                <span className="inline-flex items-center gap-2">
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/20"><Plus size={13} /></span>
-                  Create Users
-                </span>
+                <Plus size={15} />
+                Create Users
               </Button>
             </Link>
           ) : null}
@@ -88,9 +86,9 @@ export const UsersPage: React.FC = () => {
         </div>
       ) : null}
 
-      <div className="overflow-hidden rounded-md border border-[var(--line)] bg-white shadow-[var(--card-shadow)]">
+      <div className="overflow-hidden rounded-md border border-(--line) bg-white shadow-(--card-shadow)">
         <Table>
-          <TableHeader className="bg-[var(--surface-soft)]">
+          <TableHeader className="bg-(--surface-soft)">
             <TableRow>
               <TableHead><Checkbox checked={isAllSelected} onCheckedChange={(v) => setSelectedIds(v ? rows.map((u) => u.id) : [])} /></TableHead>
               <TableHead>S.N.</TableHead>
@@ -106,7 +104,7 @@ export const UsersPage: React.FC = () => {
           </TableHeader>
           <TableBody>
             {listQuery.isError ? <TableRow><TableCell colSpan={10} className="text-rose-600">Failed to load users.</TableCell></TableRow> : null}
-            {!listQuery.isLoading && !listQuery.isError && rows.length === 0 ? <TableRow><TableCell colSpan={10} className="h-24 text-center text-[var(--muted)]">No users found.</TableCell></TableRow> : null}
+            {!listQuery.isLoading && !listQuery.isError && rows.length === 0 ? <TableRow><TableCell colSpan={10} className="h-24 text-center text-(--muted)">No users found.</TableCell></TableRow> : null}
             {rows.map((u, index) => (
               <TableRow key={u.id}>
                 <TableCell><Checkbox checked={selectedIds.includes(u.id)} onCheckedChange={(checked) => setSelectedIds((prev) => checked ? [...new Set([...prev, u.id])] : prev.filter((id) => id !== u.id))} /></TableCell>
@@ -173,7 +171,7 @@ export const UsersPage: React.FC = () => {
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button variant="outline" size="icon" disabled={state.page <= 1} onClick={() => setState((p) => ({ ...p, page: 1 }))}><ChevronLeft size={14} /><ChevronLeft size={14} className="-ml-2" /></Button>
         <Button variant="outline" size="icon" disabled={state.page <= 1} onClick={() => setState((p) => ({ ...p, page: Math.max(1, p.page - 1) }))}><ChevronLeft size={14} /></Button>
-        <span className="text-sm text-[var(--muted)]">{state.page}/{Math.max(1, totalPages)}</span>
+        <span className="text-sm text-(--muted)">{state.page}/{Math.max(1, totalPages)}</span>
         <Button variant="outline" size="icon" disabled={state.page >= totalPages} onClick={() => setState((p) => ({ ...p, page: Math.min(totalPages, p.page + 1) }))}><ChevronRight size={14} /></Button>
         <Button variant="outline" size="icon" disabled={state.page >= totalPages} onClick={() => setState((p) => ({ ...p, page: totalPages }))}><ChevronRight size={14} /><ChevronRight size={14} className="-ml-2" /></Button>
       </div>

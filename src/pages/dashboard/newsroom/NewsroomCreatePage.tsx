@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useCreateNewsroom } from "@/features/newsroom";
 import { FormLayout } from "@/shared/components/forms/FormLayout";
 import { EntityFormRenderer, type EntityFieldConfig } from "@/shared/components/forms/EntityFormRenderer";
+import { Button } from "@/shared/components/ui/button";
 import { useEntityForm } from "@/shared/hooks/useEntityForm";
 import { slugify } from "@/shared/utils/slug";
 
@@ -35,5 +36,8 @@ const handleFieldChange = React.useCallback((name: string, value: unknown) => {
 }, [form, slugManuallyEdited]);
 return <FormLayout title='Create Newsroom'><form onSubmit={(e)=>{e.preventDefault(); void form.submit();}} style={{display:'grid',gap:10}}>
   <EntityFormRenderer fields={fields} values={form.values as Record<string, unknown>} errors={form.errors} onFieldChange={handleFieldChange} />
-  <div style={{display:'flex',gap:8}}><button type='submit'>Create</button><button type='button' onClick={()=>nav('/dashboard/newsroom')}>Cancel</button></div>
+  <div style={{display:'flex',gap:8}}>
+    <Button type="submit">Create</Button>
+    <Button type="button" variant="outline" onClick={() => nav('/dashboard/newsroom')}>Cancel</Button>
+  </div>
 </form></FormLayout>; };

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAdminUsersGet, useUpdateAdminUser } from "@/features/adminUsers";
 import { FormLayout } from "@/shared/components/forms/FormLayout";
 import { EntityFormRenderer, type EntityFieldConfig } from "@/shared/components/forms/EntityFormRenderer";
+import { Button } from "@/shared/components/ui/button";
 import { useEntityForm } from "@/shared/hooks/useEntityForm";
 
 const schema = z.object({ firstname:z.string().min(1), middlename:z.string().optional(), lastname:z.string().min(1), email:z.string().email(), phone:z.string().min(1), address:z.string().min(1), gender:z.enum(["MALE","FEMALE","OTHER"]), role:z.enum(["SUDOADMIN","ADMIN","USER"]), isVerified:z.boolean().default(false), sortOrder:z.string().optional().transform(v=>v?Number(v):undefined), profile:z.instanceof(File).nullable().optional() });
@@ -70,5 +71,8 @@ return <FormLayout title='Edit User'><form onSubmit={(e)=>{e.preventDefault(); v
     }}
     filePreviewUrls={{ profile: profilePreviewUrl }}
   />
-  <div style={{display:'flex',gap:8}}><button type='submit'>Update</button><button type='button' onClick={()=>nav('/dashboard/users')}>Cancel</button></div>
+  <div style={{display:'flex',gap:8}}>
+    <Button type="submit">Update</Button>
+    <Button type="button" variant="outline" onClick={() => nav('/dashboard/users')}>Cancel</Button>
+  </div>
 </form></FormLayout>; };

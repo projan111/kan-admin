@@ -89,7 +89,7 @@ export const DashboardLayout: React.FC = () => {
             unreadContacts={unreadContacts}
           />
           <div className="mx-auto w-full max-w-375 px-4 py-4 md:px-6 md:py-6">
-            <div className="mb-5 rounded-2xl border border-white/70 bg-white/82 px-4 py-3 text-sm shadow-[var(--card-shadow)] backdrop-blur">
+            <div className="mb-5 px-1 py-1 text-sm">
               <Breadcrumbs />
             </div>
             <div className="premium-animate-in min-w-0">

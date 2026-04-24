@@ -10,52 +10,17 @@ type Props = Readonly<{
 
 export const FormLayout: React.FC<Props> = ({ title, subtitle, actions, children, aside }) => {
   return (
-    <div
-      style={{
-        display: "grid",
-        gap: 18,
-        maxWidth: 1120,
-        width: "100%",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: 16,
-          background: "rgba(255,255,255,0.82)",
-          border: "1px solid rgba(255,255,255,0.7)",
-          borderRadius: 24,
-          padding: "18px 20px",
-          boxShadow: "var(--card-shadow)",
-          backdropFilter: "blur(14px)",
-        }}
-      >
+    <div className="grid w-full max-w-280 gap-[18px]">
+      <div className="flex items-center justify-between gap-4 rounded-[18px] border border-[var(--line)] bg-white px-5 py-[18px]">
         <div>
-          <h2 style={{ margin: 0, fontSize: 26, fontWeight: 900, letterSpacing: "-0.03em", color: "var(--text)" }}>{title}</h2>
-          {subtitle ? <div style={{ marginTop: 6, fontSize: 13, color: "var(--muted)" }}>{subtitle}</div> : null}
+          <h2 className="m-0 text-[26px] font-semibold tracking-[-0.03em] text-[var(--text)]">{title}</h2>
+          {subtitle ? <div className="mt-1.5 text-[13px] text-[var(--muted)]">{subtitle}</div> : null}
         </div>
         {actions}
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gap: 18,
-          gridTemplateColumns: aside ? "minmax(0, 1fr) 320px" : "1fr",
-          alignItems: "start",
-        }}
-      >
-        <div
-          style={{
-            border: "1px solid rgba(255,255,255,0.7)",
-            borderRadius: 24,
-            padding: 20,
-            background: "rgba(255,255,255,0.9)",
-            boxShadow: "var(--card-shadow)",
-          }}
-        >
+      <div className={`grid items-start gap-[18px] ${aside ? "xl:grid-cols-[minmax(0,1fr)_320px]" : "grid-cols-1"}`}>
+        <div className="rounded-[18px] border border-[var(--line)] bg-white p-5">
           {children}
         </div>
         {aside ? <div>{aside}</div> : null}

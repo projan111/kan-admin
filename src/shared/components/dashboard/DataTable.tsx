@@ -18,10 +18,10 @@ type Props<T> = Readonly<{
 
 export function DataTable<T>({ title, description, actions, columns, rows, emptyLabel }: Props<T>) {
   return (
-    <section className="overflow-hidden rounded-md border border-[var(--line)] bg-white shadow-[var(--card-shadow)]">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)]/80 bg-[var(--surface-soft)] px-5 py-4">
+    <section className="overflow-hidden rounded-[18px] border border-[var(--line)] bg-white">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] px-5 py-4">
         <div>
-          <h3 className="text-sm font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{title}</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">{title}</h3>
           {description ? <p className="mt-1 text-sm text-[var(--muted)]">{description}</p> : null}
         </div>
         {actions}

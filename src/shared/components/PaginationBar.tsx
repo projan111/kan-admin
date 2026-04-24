@@ -1,5 +1,5 @@
 import React from "react";
-import { ui } from "@/shared/styles/ui";
+import { Button } from "@/shared/components/ui/button";
 
 type Props = Readonly<{
   page: number;
@@ -11,27 +11,17 @@ type Props = Readonly<{
 export const PaginationBar: React.FC<Props> = ({ page, totalPages, onPrev, onNext }) => {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", padding: 12, borderTop: "1px solid var(--line)", background: "var(--surface-2)" }}>
-      <button
-        type="button"
-        onClick={onPrev}
-        disabled={page <= 1}
-        style={ui.btnSecondary}
-      >
+      <Button type="button" variant="outline" onClick={onPrev} disabled={page <= 1}>
         Prev
-      </button>
+      </Button>
 
       <div style={{ fontSize: 13, color: "var(--muted)", fontWeight: 700 }}>
         Page {page} / {totalPages}
       </div>
 
-      <button
-        type="button"
-        onClick={onNext}
-        disabled={page >= totalPages}
-        style={ui.btnSecondary}
-      >
+      <Button type="button" variant="outline" onClick={onNext} disabled={page >= totalPages}>
         Next
-      </button>
+      </Button>
     </div>
   );
 };
