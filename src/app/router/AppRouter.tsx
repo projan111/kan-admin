@@ -18,7 +18,6 @@ import { TeamPage } from "../../pages/dashboard/team/TeamPage";
 import { CompanyPage } from "../../pages/dashboard/company/CompanyPage";
 import { FaqCreatePage } from "../../pages/dashboard/faq/FaqCreatePage";
 import { FaqEditPage } from "../../pages/dashboard/faq/FaqEditPage";
-import { CrudRouteStubPage } from "../../pages/dashboard/common/CrudRouteStubPage";
 import { TeamCreatePage } from "../../pages/dashboard/team/TeamCreatePage";
 import { TeamEditPage } from "../../pages/dashboard/team/TeamEditPage";
 import { BrandCreatePage } from "../../pages/dashboard/brand/BrandCreatePage";
@@ -31,9 +30,21 @@ import { NewsroomCreatePage } from "../../pages/dashboard/newsroom/NewsroomCreat
 import { NewsroomEditPage } from "../../pages/dashboard/newsroom/NewsroomEditPage";
 import { UsersCreatePage } from "../../pages/dashboard/users/UsersCreatePage";
 import { UsersEditPage } from "../../pages/dashboard/users/UsersEditPage";
-import { ContactCreatePage } from "../../pages/dashboard/contact/ContactCreatePage";
 import { ProfilePage } from "../../pages/dashboard/profile/ProfilePage";
 import { DashboardOverviewPage } from "../../pages/dashboard/overview/DashboardOverviewPage";
+import { ProductsPage } from "../../pages/dashboard/products/ProductsPage";
+import { ProductCreatePage } from "../../pages/dashboard/products/ProductCreatePage";
+import { ProductDetailsPage } from "../../pages/dashboard/products/ProductDetailsPage";
+import { OrdersPage } from "../../pages/dashboard/orders/OrdersPage";
+import { OrderDetailsPage } from "../../pages/dashboard/orders/OrderDetailsPage";
+import { CustomersPage } from "../../pages/dashboard/customers/CustomersPage";
+import { CustomerDetailsPage } from "../../pages/dashboard/customers/CustomerDetailsPage";
+import { InventoryPage } from "../../pages/dashboard/inventory/InventoryPage";
+import { InventoryDetailsPage } from "../../pages/dashboard/inventory/InventoryDetailsPage";
+import { ReportsPage } from "../../pages/dashboard/reports/ReportsPage";
+import { ReportDetailsPage } from "../../pages/dashboard/reports/ReportDetailsPage";
+import { MissingModulePage } from "../../pages/dashboard/missing/MissingModulePage";
+import { MissingModuleDetailsPage } from "../../pages/dashboard/missing/MissingModuleDetailsPage";
 import {
   BrandViewPage,
   CompanyViewPage,
@@ -48,10 +59,40 @@ import { ecommerceModules } from "../config/ecommerceModules";
 import { ModulePlaceholderPage } from "../../pages/dashboard/common/ModulePlaceholderPage";
 
 const placeholderModules = ecommerceModules.filter(
-  (module) => !["overview", "users", "customers"].includes(module.key)
+  (module) =>
+    ![
+      "overview",
+      "users",
+      "customers",
+      "products",
+      "orders",
+      "inventory",
+      "categories",
+      "product-variants",
+      "product-attributes-tags",
+      "product-media",
+      "advertisements",
+      "carts",
+      "wishlists",
+      "payments",
+      "coupons",
+      "delivery",
+      "reviews",
+      "faqs",
+      "product-inquiries",
+      "contacts",
+      "site-inquiries",
+      "blog-posts",
+      "seo-metadata",
+      "newsletter",
+      "web-push-subscriptions",
+      "web-push-notifications",
+      "email-campaigns",
+      "activity-logs",
+      "audit-logs",
+    ].includes(module.key)
 );
 const usersModule = ecommerceModules.find((module) => module.key === "users");
-const customersModule = ecommerceModules.find((module) => module.key === "customers");
 
 export const AppRouter: React.FC = () => {
   return (
@@ -93,31 +134,69 @@ export const AppRouter: React.FC = () => {
             <Route path="/dashboard/auth/signup" element={<SignupPage />} />
           </Route>
 
-          <Route
-            path="/dashboard/customers"
-            element={
-              customersModule ? (
-                <ModulePlaceholderPage
-                  moduleKey={customersModule.key}
-                  title={customersModule.label}
-                  description={customersModule.description}
-                  icon={customersModule.icon}
-                />
-              ) : null
-            }
-          />
-          <Route element={<PermissionGuard permission="entity.create" />}>
-            <Route path="/dashboard/customers/create" element={<ContactCreatePage />} />
-          </Route>
-          <Route
-            path="/dashboard/customers/:id/edit"
-            element={<CrudRouteStubPage moduleLabel="Customer" mode="edit" listPath="/dashboard/customers" />}
-          />
-          <Route path="/dashboard/customers/:id" element={<ContactViewPage />} />
+          <Route path="/dashboard/customers" element={<CustomersPage />} />
+          <Route path="/dashboard/customers/:id" element={<CustomerDetailsPage />} />
+
+          <Route path="/dashboard/products" element={<ProductsPage />} />
+          <Route path="/dashboard/products/create" element={<ProductCreatePage />} />
+          <Route path="/dashboard/products/:id/edit" element={<ProductCreatePage />} />
+          <Route path="/dashboard/products/:id" element={<ProductDetailsPage />} />
+          <Route path="/dashboard/orders" element={<OrdersPage />} />
+          <Route path="/dashboard/orders/:id" element={<OrderDetailsPage />} />
+          <Route path="/dashboard/inventory" element={<InventoryPage />} />
+          <Route path="/dashboard/inventory/:id" element={<InventoryDetailsPage />} />
+          <Route path="/dashboard/reports" element={<ReportsPage />} />
+          <Route path="/dashboard/reports/:id" element={<ReportDetailsPage />} />
+          <Route path="/dashboard/categories" element={<MissingModulePage moduleKey="categories" />} />
+          <Route path="/dashboard/categories/:id" element={<MissingModuleDetailsPage moduleKey="categories" />} />
+          <Route path="/dashboard/product-variants" element={<MissingModulePage moduleKey="product-variants" />} />
+          <Route path="/dashboard/product-variants/:id" element={<MissingModuleDetailsPage moduleKey="product-variants" />} />
+          <Route path="/dashboard/product-attributes-tags" element={<MissingModulePage moduleKey="product-attributes-tags" />} />
+          <Route path="/dashboard/product-attributes-tags/:id" element={<MissingModuleDetailsPage moduleKey="product-attributes-tags" />} />
+          <Route path="/dashboard/product-media" element={<MissingModulePage moduleKey="product-media" />} />
+          <Route path="/dashboard/product-media/:id" element={<MissingModuleDetailsPage moduleKey="product-media" />} />
+          <Route path="/dashboard/advertisements" element={<MissingModulePage moduleKey="advertisements" />} />
+          <Route path="/dashboard/advertisements/:id" element={<MissingModuleDetailsPage moduleKey="advertisements" />} />
+          <Route path="/dashboard/carts" element={<MissingModulePage moduleKey="carts" />} />
+          <Route path="/dashboard/carts/:id" element={<MissingModuleDetailsPage moduleKey="carts" />} />
+          <Route path="/dashboard/wishlists" element={<MissingModulePage moduleKey="wishlists" />} />
+          <Route path="/dashboard/wishlists/:id" element={<MissingModuleDetailsPage moduleKey="wishlists" />} />
+          <Route path="/dashboard/payments" element={<MissingModulePage moduleKey="payments" />} />
+          <Route path="/dashboard/payments/:id" element={<MissingModuleDetailsPage moduleKey="payments" />} />
+          <Route path="/dashboard/coupons" element={<MissingModulePage moduleKey="coupons" />} />
+          <Route path="/dashboard/coupons/:id" element={<MissingModuleDetailsPage moduleKey="coupons" />} />
+          <Route path="/dashboard/delivery/shipments" element={<MissingModulePage moduleKey="delivery" />} />
+          <Route path="/dashboard/delivery/shipments/:id" element={<MissingModuleDetailsPage moduleKey="delivery" />} />
+          <Route path="/dashboard/reviews" element={<MissingModulePage moduleKey="reviews" />} />
+          <Route path="/dashboard/reviews/:id" element={<MissingModuleDetailsPage moduleKey="reviews" />} />
+          <Route path="/dashboard/faqs" element={<MissingModulePage moduleKey="faqs" />} />
+          <Route path="/dashboard/faqs/:id" element={<MissingModuleDetailsPage moduleKey="faqs" />} />
+          <Route path="/dashboard/support/product-inquiries" element={<MissingModulePage moduleKey="product-inquiries" />} />
+          <Route path="/dashboard/support/product-inquiries/:id" element={<MissingModuleDetailsPage moduleKey="product-inquiries" />} />
+          <Route path="/dashboard/support/contacts" element={<MissingModulePage moduleKey="contacts" />} />
+          <Route path="/dashboard/support/contacts/:id" element={<MissingModuleDetailsPage moduleKey="contacts" />} />
+          <Route path="/dashboard/support/site-inquiries" element={<MissingModulePage moduleKey="site-inquiries" />} />
+          <Route path="/dashboard/support/site-inquiries/:id" element={<MissingModuleDetailsPage moduleKey="site-inquiries" />} />
+          <Route path="/dashboard/blog-posts" element={<MissingModulePage moduleKey="blog-posts" />} />
+          <Route path="/dashboard/blog-posts/:id" element={<MissingModuleDetailsPage moduleKey="blog-posts" />} />
+          <Route path="/dashboard/seo-metadata" element={<MissingModulePage moduleKey="seo-metadata" />} />
+          <Route path="/dashboard/seo-metadata/:id" element={<MissingModuleDetailsPage moduleKey="seo-metadata" />} />
+          <Route path="/dashboard/newsletter" element={<MissingModulePage moduleKey="newsletter" />} />
+          <Route path="/dashboard/newsletter/:id" element={<MissingModuleDetailsPage moduleKey="newsletter" />} />
+          <Route path="/dashboard/web-push-subscriptions" element={<MissingModulePage moduleKey="web-push-subscriptions" />} />
+          <Route path="/dashboard/web-push-subscriptions/:id" element={<MissingModuleDetailsPage moduleKey="web-push-subscriptions" />} />
+          <Route path="/dashboard/web-push-notifications" element={<MissingModulePage moduleKey="web-push-notifications" />} />
+          <Route path="/dashboard/web-push-notifications/:id" element={<MissingModuleDetailsPage moduleKey="web-push-notifications" />} />
+          <Route path="/dashboard/email-campaigns" element={<MissingModulePage moduleKey="email-campaigns" />} />
+          <Route path="/dashboard/email-campaigns/:id" element={<MissingModuleDetailsPage moduleKey="email-campaigns" />} />
+          <Route path="/dashboard/activity-logs" element={<MissingModulePage moduleKey="activity-logs" />} />
+          <Route path="/dashboard/activity-logs/:id" element={<MissingModuleDetailsPage moduleKey="activity-logs" />} />
+          <Route path="/dashboard/audit-logs" element={<MissingModulePage moduleKey="audit-logs" />} />
+          <Route path="/dashboard/audit-logs/:id" element={<MissingModuleDetailsPage moduleKey="audit-logs" />} />
 
           <Route path="/dashboard/contact" element={<Navigate to="/dashboard/customers" replace />} />
-          <Route path="/dashboard/contact/create" element={<Navigate to="/dashboard/customers/create" replace />} />
-          <Route path="/dashboard/contact/:id/edit" element={<CrudRouteStubPage moduleLabel="Customer" mode="edit" listPath="/dashboard/customers" />} />
+          <Route path="/dashboard/contact/create" element={<Navigate to="/dashboard/customers" replace />} />
+          <Route path="/dashboard/contact/:id/edit" element={<Navigate to="/dashboard/customers" replace />} />
           <Route path="/dashboard/contact/:id" element={<ContactViewPage />} />
 
           <Route path="/dashboard/team" element={<TeamPage />} />

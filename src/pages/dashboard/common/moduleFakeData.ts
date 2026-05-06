@@ -87,11 +87,11 @@ export const fakeModuleDefinitions: Readonly<Record<string, FakeModuleDefinition
       { key: "permissions", label: "Permissions" },
     ],
     rows: [
-      { id: "CUS-2001", name: "Olivia Johnson", routine: "Brightening Routine", value: "$2,480", status: toggle(true), permissions: badges(badge("VIP", "success"), badge("Active", "info")) },
-      { id: "CUS-2002", name: "Liam Patel", routine: "Barrier Repair", value: "$684", status: toggle(true), permissions: badges(badge("Returning", "info")) },
-      { id: "CUS-2003", name: "Isabella Chen", routine: "Daily SPF", value: "$148", status: toggle(false), permissions: badges(badge("New", "neutral")) },
-      { id: "CUS-2004", name: "Ethan Miller", routine: "Acne Control", value: "$512", status: toggle(true), permissions: badges(badge("At Risk", "warning")) },
-      { id: "CUS-2005", name: "Mia Garcia", routine: "Lip And Cheek", value: "$1,396", status: toggle(true), permissions: badges(badge("Loyal", "success")) },
+      { id: "CUS-2001", name: "Olivia Johnson", routine: "Brightening Routine", value: "Rs 2,480", status: toggle(true), permissions: badges(badge("VIP", "success"), badge("Active", "info")) },
+      { id: "CUS-2002", name: "Liam Patel", routine: "Barrier Repair", value: "Rs 684", status: toggle(true), permissions: badges(badge("Returning", "info")) },
+      { id: "CUS-2003", name: "Isabella Chen", routine: "Daily SPF", value: "Rs 148", status: toggle(false), permissions: badges(badge("New", "neutral")) },
+      { id: "CUS-2004", name: "Ethan Miller", routine: "Acne Control", value: "Rs 512", status: toggle(true), permissions: badges(badge("At Risk", "warning")) },
+      { id: "CUS-2005", name: "Mia Garcia", routine: "Lip And Cheek", value: "Rs 1,396", status: toggle(true), permissions: badges(badge("Loyal", "success")) },
     ],
   },
   products: {
