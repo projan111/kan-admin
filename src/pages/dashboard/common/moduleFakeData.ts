@@ -48,11 +48,11 @@ const image = (label: string): FakeImage => ({ kind: "image", label });
 const toggle = (checked: boolean): FakeToggle => ({ kind: "toggle", checked });
 
 const beautyProducts = [
-  { name: "Radiance Vitamin C Serum", sku: "BEA-VC-101", price: "$48", category: "Skincare", image: image("Radiance Vitamin C Serum") },
-  { name: "Velvet Matte Lip Kit", sku: "BEA-LP-202", price: "$36", category: "Makeup", image: image("Velvet Matte Lip Kit") },
-  { name: "Botanical Cleansing Balm", sku: "BEA-CL-303", price: "$42", category: "Skincare", image: image("Botanical Cleansing Balm") },
-  { name: "Silk Repair Shampoo", sku: "BEA-HA-404", price: "$28", category: "Haircare", image: image("Silk Repair Shampoo") },
-  { name: "Dewdrop Gel Cream", sku: "BEA-MO-505", price: "$52", category: "Moisturizer", image: image("Dewdrop Gel Cream") },
+  { name: "Radiance Vitamin C Serum", sku: "BEA-VC-101", price: "Rs 48", category: "Skincare", image: image("Radiance Vitamin C Serum") },
+  { name: "Velvet Matte Lip Kit", sku: "BEA-LP-202", price: "Rs 36", category: "Makeup", image: image("Velvet Matte Lip Kit") },
+  { name: "Botanical Cleansing Balm", sku: "BEA-CL-303", price: "Rs 42", category: "Skincare", image: image("Botanical Cleansing Balm") },
+  { name: "Silk Repair Shampoo", sku: "BEA-HA-404", price: "Rs 28", category: "Haircare", image: image("Silk Repair Shampoo") },
+  { name: "Dewdrop Gel Cream", sku: "BEA-MO-505", price: "Rs 52", category: "Moisturizer", image: image("Dewdrop Gel Cream") },
 ] as const;
 
 export const fakeModuleDefinitions: Readonly<Record<string, FakeModuleDefinition>> = {
@@ -132,11 +132,11 @@ export const fakeModuleDefinitions: Readonly<Record<string, FakeModuleDefinition
       { key: "permissions", label: "Permissions" },
     ],
     rows: [
-      { id: "ORD-4001", image: image("Radiance Vitamin C Serum"), name: "Order #10482 · Radiance Vitamin C Serum", price: "$48", status: toggle(true), permissions: badges(badge("Packed", "info"), badge("Paid", "success")) },
-      { id: "ORD-4002", image: image("Velvet Matte Lip Kit"), name: "Order #10481 · Velvet Matte Lip Kit", price: "$36", status: toggle(false), permissions: badges(badge("Pending", "warning")) },
-      { id: "ORD-4003", image: image("Botanical Cleansing Balm"), name: "Order #10480 · Botanical Cleansing Balm", price: "$42", status: toggle(true), permissions: badges(badge("Create", "success"), badge("Read", "info"), badge("Edit", "neutral")) },
-      { id: "ORD-4004", image: image("Silk Repair Shampoo"), name: "Order #10479 · Silk Repair Shampoo", price: "$28", status: toggle(true), permissions: badges(badge("Delivered", "success")) },
-      { id: "ORD-4005", image: image("Dewdrop Gel Cream"), name: "Order #10478 · Dewdrop Gel Cream", price: "$52", status: toggle(false), permissions: badges(badge("Returned", "danger")) },
+      { id: "ORD-4001", image: image("Radiance Vitamin C Serum"), name: "Order #10482 · Radiance Vitamin C Serum", price: "Rs 48", status: toggle(true), permissions: badges(badge("Packed", "info"), badge("Paid", "success")) },
+      { id: "ORD-4002", image: image("Velvet Matte Lip Kit"), name: "Order #10481 · Velvet Matte Lip Kit", price: "Rs 36", status: toggle(false), permissions: badges(badge("Pending", "warning")) },
+      { id: "ORD-4003", image: image("Botanical Cleansing Balm"), name: "Order #10480 · Botanical Cleansing Balm", price: "Rs 42", status: toggle(true), permissions: badges(badge("Create", "success"), badge("Read", "info"), badge("Edit", "neutral")) },
+      { id: "ORD-4004", image: image("Silk Repair Shampoo"), name: "Order #10479 · Silk Repair Shampoo", price: "Rs 28", status: toggle(true), permissions: badges(badge("Delivered", "success")) },
+      { id: "ORD-4005", image: image("Dewdrop Gel Cream"), name: "Order #10478 · Dewdrop Gel Cream", price: "Rs 52", status: toggle(false), permissions: badges(badge("Returned", "danger")) },
     ],
   },
   inventory: {
@@ -170,11 +170,11 @@ export const fakeModuleDefinitions: Readonly<Record<string, FakeModuleDefinition
       { key: "permissions", label: "Permissions" },
     ],
     rows: [
-      { id: "PAY-6001", name: "Radiance Serum Checkout", method: "Stripe", price: "$48", status: toggle(true), permissions: badges(badge("Captured", "success")) },
-      { id: "PAY-6002", name: "Lip Kit Checkout", method: "PayPal", price: "$36", status: toggle(false), permissions: badges(badge("Pending", "warning")) },
-      { id: "PAY-6003", name: "Cleansing Balm Checkout", method: "Khalti", price: "$42", status: toggle(true), permissions: badges(badge("Authorized", "info")) },
-      { id: "PAY-6004", name: "Shampoo Checkout", method: "Stripe", price: "$28", status: toggle(true), permissions: badges(badge("Captured", "success")) },
-      { id: "PAY-6005", name: "Gel Cream Refund", method: "Stripe", price: "$52", status: toggle(false), permissions: badges(badge("Refunded", "danger")) },
+      { id: "PAY-6001", name: "Radiance Serum Checkout", method: "Stripe", price: "Rs 48", status: toggle(true), permissions: badges(badge("Captured", "success")) },
+      { id: "PAY-6002", name: "Lip Kit Checkout", method: "PayPal", price: "Rs 36", status: toggle(false), permissions: badges(badge("Pending", "warning")) },
+      { id: "PAY-6003", name: "Cleansing Balm Checkout", method: "Khalti", price: "Rs 42", status: toggle(true), permissions: badges(badge("Authorized", "info")) },
+      { id: "PAY-6004", name: "Shampoo Checkout", method: "Stripe", price: "Rs 28", status: toggle(true), permissions: badges(badge("Captured", "success")) },
+      { id: "PAY-6005", name: "Gel Cream Refund", method: "Stripe", price: "Rs 52", status: toggle(false), permissions: badges(badge("Refunded", "danger")) },
     ],
   },
   reports: {
@@ -189,9 +189,9 @@ export const fakeModuleDefinitions: Readonly<Record<string, FakeModuleDefinition
       { key: "permissions", label: "Permissions" },
     ],
     rows: [
-      { id: "REP-7001", name: "Glow Line Sales", scope: "Last 30 Days", price: "$48.2K", status: toggle(true), permissions: badges(badge("Ready", "success")) },
+      { id: "REP-7001", name: "Glow Line Sales", scope: "Last 30 Days", price: "Rs 48.2K", status: toggle(true), permissions: badges(badge("Ready", "success")) },
       { id: "REP-7002", name: "Skincare Margin", scope: "Category", price: "38%", status: toggle(true), permissions: badges(badge("Ready", "success")) },
-      { id: "REP-7003", name: "Returns Audit", scope: "Weekly", price: "$3.4K", status: toggle(false), permissions: badges(badge("Queued", "warning")) },
+      { id: "REP-7003", name: "Returns Audit", scope: "Weekly", price: "Rs 3.4K", status: toggle(false), permissions: badges(badge("Queued", "warning")) },
       { id: "REP-7004", name: "VIP Retention", scope: "Quarterly", price: "74%", status: toggle(true), permissions: badges(badge("Ready", "success")) },
       { id: "REP-7005", name: "Shade Sell Through", scope: "Current", price: "61%", status: toggle(false), permissions: badges(badge("Processing", "info")) },
     ],
@@ -228,9 +228,9 @@ export const fakeModuleDefinitions: Readonly<Record<string, FakeModuleDefinition
     ],
     rows: [
       { id: "DSC-9001", name: "Glow Starter Offer", code: "GLOW15", price: "15%", status: toggle(true), permissions: badges(badge("Active", "success")) },
-      { id: "DSC-9002", name: "Lip Duo Discount", code: "LIPDUO", price: "$10", status: toggle(true), permissions: badges(badge("Create", "success"), badge("Read", "info")) },
+      { id: "DSC-9002", name: "Lip Duo Discount", code: "LIPDUO", price: "Rs 10", status: toggle(true), permissions: badges(badge("Create", "success"), badge("Read", "info")) },
       { id: "DSC-9003", name: "Hair Repair Promo", code: "SILK20", price: "20%", status: toggle(false), permissions: badges(badge("Ending Soon", "warning")) },
-      { id: "DSC-9004", name: "New Customer Glow", code: "WELCOME5", price: "$5", status: toggle(true), permissions: badges(badge("Read", "info"), badge("Edit", "neutral"), badge("Delete", "danger")) },
+      { id: "DSC-9004", name: "New Customer Glow", code: "WELCOME5", price: "Rs 5", status: toggle(true), permissions: badges(badge("Read", "info"), badge("Edit", "neutral"), badge("Delete", "danger")) },
       { id: "DSC-9005", name: "Night Cream Bundle", code: "NIGHTSET", price: "12%", status: toggle(false), permissions: badges(badge("Expired", "danger")) },
     ],
   },
@@ -303,11 +303,11 @@ export const fakeModuleDefinitions: Readonly<Record<string, FakeModuleDefinition
       { key: "permissions", label: "Permissions" },
     ],
     rows: [
-      { id: "SHP-1301", name: "Glow Express", carrier: "DHL", price: "$12", status: toggle(true), permissions: badges(badge("Active", "success")) },
-      { id: "SHP-1302", name: "Routine Standard", carrier: "UPS", price: "$6.50", status: toggle(true), permissions: badges(badge("Create", "success"), badge("Read", "info")) },
-      { id: "SHP-1303", name: "International Beauty", carrier: "FedEx", price: "$28", status: toggle(false), permissions: badges(badge("Monitor", "warning")) },
-      { id: "SHP-1304", name: "Sample Mailer", carrier: "Local Partner", price: "$4", status: toggle(true), permissions: badges(badge("Edit", "neutral")) },
-      { id: "SHP-1305", name: "Store Pickup", carrier: "Pickup", price: "$0", status: toggle(true), permissions: badges(badge("Active", "success")) },
+      { id: "SHP-1301", name: "Glow Express", carrier: "DHL", price: "Rs 12", status: toggle(true), permissions: badges(badge("Active", "success")) },
+      { id: "SHP-1302", name: "Routine Standard", carrier: "UPS", price: "Rs 6.50", status: toggle(true), permissions: badges(badge("Create", "success"), badge("Read", "info")) },
+      { id: "SHP-1303", name: "International Beauty", carrier: "FedEx", price: "Rs 28", status: toggle(false), permissions: badges(badge("Monitor", "warning")) },
+      { id: "SHP-1304", name: "Sample Mailer", carrier: "Local Partner", price: "Rs 4", status: toggle(true), permissions: badges(badge("Edit", "neutral")) },
+      { id: "SHP-1305", name: "Store Pickup", carrier: "Pickup", price: "Rs 0", status: toggle(true), permissions: badges(badge("Active", "success")) },
     ],
   },
   returns: {
@@ -322,11 +322,11 @@ export const fakeModuleDefinitions: Readonly<Record<string, FakeModuleDefinition
       { key: "permissions", label: "Permissions" },
     ],
     rows: [
-      { id: "RMA-1401", name: "Radiance Serum Return", reason: "Damaged Pump", price: "$48", status: toggle(true), permissions: badges(badge("Approved", "success")) },
-      { id: "RMA-1402", name: "Lip Kit Return", reason: "Wrong Shade", price: "$36", status: toggle(false), permissions: badges(badge("Pending", "warning")) },
-      { id: "RMA-1403", name: "Cleansing Balm Return", reason: "Allergy Concern", price: "$42", status: toggle(true), permissions: badges(badge("Received", "info")) },
-      { id: "RMA-1404", name: "Shampoo Return", reason: "Late Delivery", price: "$28", status: toggle(true), permissions: badges(badge("Refunded", "success")) },
-      { id: "RMA-1405", name: "Gel Cream Return", reason: "Opened Item", price: "$0", status: toggle(false), permissions: badges(badge("Rejected", "danger")) },
+      { id: "RMA-1401", name: "Radiance Serum Return", reason: "Damaged Pump", price: "Rs 48", status: toggle(true), permissions: badges(badge("Approved", "success")) },
+      { id: "RMA-1402", name: "Lip Kit Return", reason: "Wrong Shade", price: "Rs 36", status: toggle(false), permissions: badges(badge("Pending", "warning")) },
+      { id: "RMA-1403", name: "Cleansing Balm Return", reason: "Allergy Concern", price: "Rs 42", status: toggle(true), permissions: badges(badge("Received", "info")) },
+      { id: "RMA-1404", name: "Shampoo Return", reason: "Late Delivery", price: "Rs 28", status: toggle(true), permissions: badges(badge("Refunded", "success")) },
+      { id: "RMA-1405", name: "Gel Cream Return", reason: "Opened Item", price: "Rs 0", status: toggle(false), permissions: badges(badge("Rejected", "danger")) },
     ],
   },
   cms: {
@@ -379,11 +379,11 @@ export const fakeModuleDefinitions: Readonly<Record<string, FakeModuleDefinition
       { key: "permissions", label: "Permissions" },
     ],
     rows: [
-      { id: "VEN-1701", name: "Luna Skin Labs", line: "Clinical Skincare", price: "$8,420", status: toggle(true), permissions: badges(badge("Active", "success")) },
-      { id: "VEN-1702", name: "Petal Color Co.", line: "Color Cosmetics", price: "$4,180", status: toggle(true), permissions: badges(badge("Active", "success")) },
-      { id: "VEN-1703", name: "Silk Root Care", line: "Haircare", price: "$1,240", status: toggle(false), permissions: badges(badge("Pending Approval", "warning")) },
-      { id: "VEN-1704", name: "Glow Rituals", line: "Bath & Body", price: "$2,830", status: toggle(true), permissions: badges(badge("Onboarding", "info")) },
-      { id: "VEN-1705", name: "Dew Atelier", line: "Premium Moisture", price: "$980", status: toggle(false), permissions: badges(badge("Paused", "danger")) },
+      { id: "VEN-1701", name: "Luna Skin Labs", line: "Clinical Skincare", price: "Rs 8,420", status: toggle(true), permissions: badges(badge("Active", "success")) },
+      { id: "VEN-1702", name: "Petal Color Co.", line: "Color Cosmetics", price: "Rs 4,180", status: toggle(true), permissions: badges(badge("Active", "success")) },
+      { id: "VEN-1703", name: "Silk Root Care", line: "Haircare", price: "Rs 1,240", status: toggle(false), permissions: badges(badge("Pending Approval", "warning")) },
+      { id: "VEN-1704", name: "Glow Rituals", line: "Bath & Body", price: "Rs 2,830", status: toggle(true), permissions: badges(badge("Onboarding", "info")) },
+      { id: "VEN-1705", name: "Dew Atelier", line: "Premium Moisture", price: "Rs 980", status: toggle(false), permissions: badges(badge("Paused", "danger")) },
     ],
   },
   "multi-store": {
@@ -417,11 +417,11 @@ export const fakeModuleDefinitions: Readonly<Record<string, FakeModuleDefinition
       { key: "permissions", label: "Permissions" },
     ],
     rows: [
-      { id: "SUB-1901", name: "Daily Glow Refill", cadence: "Monthly", price: "$22,200", status: toggle(true), permissions: badges(badge("Active", "success")) },
-      { id: "SUB-1902", name: "Lip Library Box", cadence: "Monthly", price: "$18,470", status: toggle(true), permissions: badges(badge("Active", "success")) },
-      { id: "SUB-1903", name: "Barrier Repair Kit", cadence: "Quarterly", price: "$7,920", status: toggle(false), permissions: badges(badge("Review", "warning")) },
-      { id: "SUB-1904", name: "VIP Serum Club", cadence: "Annual", price: "$9,860", status: toggle(true), permissions: badges(badge("Pilot", "info")) },
-      { id: "SUB-1905", name: "Legacy Beauty Box", cadence: "Monthly", price: "$1,140", status: toggle(false), permissions: badges(badge("Sunset", "danger")) },
+      { id: "SUB-1901", name: "Daily Glow Refill", cadence: "Monthly", price: "Rs 22,200", status: toggle(true), permissions: badges(badge("Active", "success")) },
+      { id: "SUB-1902", name: "Lip Library Box", cadence: "Monthly", price: "Rs 18,470", status: toggle(true), permissions: badges(badge("Active", "success")) },
+      { id: "SUB-1903", name: "Barrier Repair Kit", cadence: "Quarterly", price: "Rs 7,920", status: toggle(false), permissions: badges(badge("Review", "warning")) },
+      { id: "SUB-1904", name: "VIP Serum Club", cadence: "Annual", price: "Rs 9,860", status: toggle(true), permissions: badges(badge("Pilot", "info")) },
+      { id: "SUB-1905", name: "Legacy Beauty Box", cadence: "Monthly", price: "Rs 1,140", status: toggle(false), permissions: badges(badge("Sunset", "danger")) },
     ],
   },
   "bundle-products": {
@@ -436,11 +436,11 @@ export const fakeModuleDefinitions: Readonly<Record<string, FakeModuleDefinition
       { key: "permissions", label: "Permissions" },
     ],
     rows: [
-      { id: "BND-2001", image: image("Glow Starter Set"), name: "Glow Starter Set", price: "$96", status: toggle(true), permissions: badges(badge("Create", "success"), badge("Read", "info"), badge("Edit", "neutral")) },
-      { id: "BND-2002", image: image("Lip Duo Collection"), name: "Lip Duo Collection", price: "$58", status: toggle(true), permissions: badges(badge("Active", "success")) },
-      { id: "BND-2003", image: image("Hair Repair Ritual"), name: "Hair Repair Ritual", price: "$74", status: toggle(false), permissions: badges(badge("Low Margin", "warning")) },
-      { id: "BND-2004", image: image("Night Reset Pair"), name: "Night Reset Pair", price: "$102", status: toggle(true), permissions: badges(badge("Read", "info"), badge("Edit", "neutral")) },
-      { id: "BND-2005", image: image("Hydration Duo"), name: "Hydration Duo", price: "$88", status: toggle(false), permissions: badges(badge("Paused", "danger")) },
+      { id: "BND-2001", image: image("Glow Starter Set"), name: "Glow Starter Set", price: "Rs 96", status: toggle(true), permissions: badges(badge("Create", "success"), badge("Read", "info"), badge("Edit", "neutral")) },
+      { id: "BND-2002", image: image("Lip Duo Collection"), name: "Lip Duo Collection", price: "Rs 58", status: toggle(true), permissions: badges(badge("Active", "success")) },
+      { id: "BND-2003", image: image("Hair Repair Ritual"), name: "Hair Repair Ritual", price: "Rs 74", status: toggle(false), permissions: badges(badge("Low Margin", "warning")) },
+      { id: "BND-2004", image: image("Night Reset Pair"), name: "Night Reset Pair", price: "Rs 102", status: toggle(true), permissions: badges(badge("Read", "info"), badge("Edit", "neutral")) },
+      { id: "BND-2005", image: image("Hydration Duo"), name: "Hydration Duo", price: "Rs 88", status: toggle(false), permissions: badges(badge("Paused", "danger")) },
     ],
   },
   marketplace: {
