@@ -9,7 +9,6 @@ import {
   Users,
   TrendingUp,
   AlertCircle,
-  ShoppingBag,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 
