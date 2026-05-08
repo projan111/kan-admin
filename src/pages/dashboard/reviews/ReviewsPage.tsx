@@ -1,166 +1,165 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, UserCheck, UserX, Edit, Trash2 } from "lucide-react";
-import { useToast } from "@/shared/components/feedback/ToastProvider";
-import { confirmAction } from "@/shared/utils/confirm";
 import {
-  hideRowIds,
-  readHiddenRowIds,
-} from "@/pages/dashboard/common/dashboardTableState";
-import { readCustomerRecords } from "./customerData";
+  Star,
+  MessageSquare,
+  CheckCircle,
+  XCircle,
+  Edit,
+  Trash2,
+} from "lucide-react";
 import { StatusBadge } from "@/shared/components/dashboard/StatusBadge";
 
-const verificationVariantMap: Record<string, "qualified" | "closedLost"> = {
-  Verified: "qualified",
-  Pending: "closedLost",
+type Review = {
+  id: string;
+  productName: string;
+  customerName: string;
+  rating: number;
+  comment: string;
+  status: "Published" | "Pending" | "Rejected";
+  type: "Product" | "Site";
+  date: string;
 };
 
-export const CustomersPage: React.FC = () => {
+// Sample data
+const sampleReviews: Review[] = [
+  {
+    id: "1",
+    productName: "Matte Primer",
+    customerName: "Alice Martin",
+    rating: 5,
+    comment: "Excellent product! Highly recommend.",
+    status: "Published",
+    type: "Product",
+    date: "Mar 19, 2026",
+  },
+  {
+    id: "2",
+    productName: "Foundation",
+    customerName: "Bob Chen",
+    rating: 4,
+    comment: "Good quality, but a bit pricey.",
+    status: "Published",
+    type: "Product",
+    date: "Mar 18, 2026",
+  },
+  {
+    id: "3",
+    productName: "Website Experience",
+    customerName: "Sara Kim",
+    rating: 5,
+    comment: "Great website, easy to navigate!",
+    status: "Published",
+    type: "Site",
+    date: "Mar 17, 2026",
+  },
+  {
+    id: "4",
+    productName: "Lipstick",
+    customerName: "Tom Rivera",
+    rating: 2,
+    comment: "Color doesn't match the description.",
+    status: "Pending",
+    type: "Product",
+    date: "Mar 16, 2026",
+  },
+  {
+    id: "5",
+    productName: "Mascara",
+    customerName: "Nina Patel",
+    rating: 1,
+    comment: "Terrible quality, very disappointed.",
+    status: "Rejected",
+    type: "Product",
+    date: "Mar 15, 2026",
+  },
+];
+
+const statusVariantMap: Record<string, any> = {
+  Published: "completed",
+  Pending: "pending",
+  Rejected: "cancelled",
+};
+
+export const ReviewsPage: React.FC = () => {
   const navigate = useNavigate();
-  const toast = useToast();
   const [search, setSearch] = React.useState("");
-  const [customers, setCustomers] = React.useState(() => {
-    const hiddenIds = readHiddenRowIds("customers");
-    return readCustomerRecords().filter(
-      (customer) => !hiddenIds.has(customer.id),
-    );
-  });
+  const [reviews] = React.useState<Review[]>(sampleReviews);
   const [selectedIds, setSelectedIds] = React.useState<ReadonlyArray<string>>(
     [],
   );
 
-  const refreshCustomers = React.useCallback(() => {
-    const hiddenIds = readHiddenRowIds("customers");
-    setCustomers(
-      readCustomerRecords().filter((customer) => !hiddenIds.has(customer.id)),
-    );
-  }, []);
-
-  React.useEffect(() => {
-    refreshCustomers();
-  }, [refreshCustomers]);
-
-  const filteredCustomers = React.useMemo(() => {
+  const filteredReviews = React.useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return customers;
+    if (!query) return reviews;
 
-    return customers.filter((customer) =>
+    return reviews.filter((review) =>
       [
-        customer.name,
-        customer.email,
-        customer.city,
-        customer.segment,
-        customer.status,
-        customer.verification,
+        review.productName,
+        review.customerName,
+        review.comment,
+        review.status,
+        review.type,
       ].some((value) => value.toLowerCase().includes(query)),
     );
-  }, [customers, search]);
+  }, [reviews, search]);
 
   // Calculate stats
   const stats = React.useMemo(() => {
-    const total = customers.length;
-    const verified = customers.filter(
-      (c) => c.verification === "Verified",
-    ).length;
-    const pending = customers.filter(
-      (c) => c.verification === "Pending",
-    ).length;
-    const active = customers.filter((c) => c.status === "Active").length;
+    const total = reviews.length;
+    const published = reviews.filter((r) => r.status === "Published").length;
+    const pending = reviews.filter((r) => r.status === "Pending").length;
+    const rejected = reviews.filter((r) => r.status === "Rejected").length;
+    const avgRating = (
+      reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    ).toFixed(1);
 
-    return { total, verified, pending, active };
-  }, [customers]);
+    return { total, published, pending, rejected, avgRating };
+  }, [reviews]);
 
-  const onDeleteCustomers = async (customerIds: ReadonlyArray<string>) => {
-    if (customerIds.length === 0) return;
-
-    const confirmed = await confirmAction(
-      customerIds.length === 1
-        ? "Delete this customer?"
-        : `Delete ${customerIds.length} selected customers?`,
-    );
-    if (!confirmed) return;
-
-    hideRowIds("customers", customerIds);
-    refreshCustomers();
-    setSelectedIds((current) =>
-      current.filter((id) => !customerIds.includes(id)),
-    );
-    toast.success(
-      `${customerIds.length} ${customerIds.length === 1 ? "customer" : "customers"} deleted.`,
+  const renderStars = (rating: number) => {
+    return (
+      <div className="flex items-center gap-0.5">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            size={14}
+            className={
+              star <= rating
+                ? "fill-yellow-400 text-yellow-400"
+                : "text-gray-300"
+            }
+          />
+        ))}
+      </div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-[1400px] p-6">
-        {/* Breadcrumbs */}
-        <div className="mb-4 flex items-center gap-2 text-sm text-gray-500">
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="hover:text-gray-700"
-          >
-            🏠
-          </button>
-          <span>›</span>
-          <span className="text-gray-400">DASHBOARD</span>
-          <span>›</span>
-          <span className="font-medium text-gray-900 uppercase">CUSTOMERS</span>
-        </div>
-
         {/* Page Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-semibold text-gray-900">Customers</h1>
+          <h1 className="text-3xl font-semibold text-gray-900">Reviews</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Track customer accounts, verification status, and order history
+            Moderate customer reviews, publish/unpublish, and manage feedback
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <div className="rounded-xl bg-blue-50 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Total Contacts
+                  Total Reviews
                 </p>
                 <p className="mt-1 text-3xl font-bold text-gray-900">
                   {stats.total}
                 </p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                <Users size={22} className="text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-yellow-50 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Leads
-                </p>
-                <p className="mt-1 text-3xl font-bold text-gray-900">
-                  {stats.pending}
-                </p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
-                <UserX size={22} className="text-yellow-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-purple-50 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Prospects
-                </p>
-                <p className="mt-1 text-3xl font-bold text-gray-900">
-                  {stats.verified}
-                </p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
-                <UserCheck size={22} className="text-purple-600" />
+                <MessageSquare size={22} className="text-blue-600" />
               </div>
             </div>
           </div>
@@ -169,40 +168,82 @@ export const CustomersPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Customers
+                  Published
                 </p>
                 <p className="mt-1 text-3xl font-bold text-gray-900">
-                  {stats.active}
+                  {stats.published}
                 </p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
-                <Users size={22} className="text-emerald-600" />
+                <CheckCircle size={22} className="text-emerald-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-amber-50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
+                  Pending
+                </p>
+                <p className="mt-1 text-3xl font-bold text-gray-900">
+                  {stats.pending}
+                </p>
+              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100">
+                <MessageSquare size={22} className="text-amber-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-red-50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
+                  Rejected
+                </p>
+                <p className="mt-1 text-3xl font-bold text-gray-900">
+                  {stats.rejected}
+                </p>
+              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                <XCircle size={22} className="text-red-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-yellow-50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
+                  Avg Rating
+                </p>
+                <p className="mt-1 text-3xl font-bold text-gray-900">
+                  {stats.avgRating}
+                </p>
+              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
+                <Star size={22} className="text-yellow-600" />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Search and Actions */}
+        {/* Search */}
         <div className="mb-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-gray-900">
-              {filteredCustomers.length} contacts
+              {filteredReviews.length} reviews
             </span>
           </div>
           <div className="flex items-center gap-3">
             <input
               type="text"
-              placeholder="Search contacts..."
+              placeholder="Search reviews..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-10 w-64 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-900 placeholder-gray-500 outline-none transition-all focus:border-gray-400"
             />
-            <button
-              onClick={() => navigate("/dashboard/customers/create")}
-              className="flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
-            >
-              + New Contact
-            </button>
           </div>
         </div>
 
@@ -215,13 +256,13 @@ export const CustomersPage: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={
-                      filteredCustomers.length > 0 &&
-                      selectedIds.length === filteredCustomers.length
+                      filteredReviews.length > 0 &&
+                      selectedIds.length === filteredReviews.length
                     }
                     onChange={(e) =>
                       setSelectedIds(
                         e.target.checked
-                          ? filteredCustomers.map((c) => c.id)
+                          ? filteredReviews.map((r) => r.id)
                           : [],
                       )
                     }
@@ -232,22 +273,25 @@ export const CustomersPage: React.FC = () => {
                   #
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Name
+                  Product/Site
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Email
+                  Customer
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Company
+                  Rating
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Phone
+                  Comment
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  Type
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Added
+                  Date
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">
                   Action
@@ -255,30 +299,30 @@ export const CustomersPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {filteredCustomers.length === 0 ? (
+              {filteredReviews.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={9}
+                    colSpan={10}
                     className="px-6 py-12 text-center text-sm text-gray-500"
                   >
-                    No customers found.
+                    No reviews found.
                   </td>
                 </tr>
               ) : null}
-              {filteredCustomers.map((customer, idx) => (
+              {filteredReviews.map((review, idx) => (
                 <tr
-                  key={customer.id}
+                  key={review.id}
                   className="transition-colors hover:bg-gray-50"
                 >
                   <td className="px-6 py-4">
                     <input
                       type="checkbox"
-                      checked={selectedIds.includes(customer.id)}
+                      checked={selectedIds.includes(review.id)}
                       onChange={(e) =>
                         setSelectedIds((current) =>
                           e.target.checked
-                            ? [...current, customer.id]
-                            : current.filter((id) => id !== customer.id),
+                            ? [...current, review.id]
+                            : current.filter((id) => id !== review.id),
                         )
                       }
                       className="h-4 w-4 rounded border-gray-300"
@@ -286,46 +330,50 @@ export const CustomersPage: React.FC = () => {
                     />
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{idx + 1}</td>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    {review.productName}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-600">
+                    {review.customerName}
+                  </td>
+                  <td className="px-6 py-4">{renderStars(review.rating)}</td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-600">
-                        {customer.name.substring(0, 2).toUpperCase()}
-                      </div>
-                      <span className="text-sm font-medium text-gray-900">
-                        {customer.name}
-                      </span>
-                    </div>
+                    <p className="max-w-xs truncate text-sm text-gray-600">
+                      {review.comment}
+                    </p>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {customer.email}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {customer.city}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    +1 555-0{idx + 1}01
+                  <td className="px-6 py-4">
+                    <span
+                      className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${
+                        review.type === "Product"
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-purple-100 text-purple-700"
+                      }`}
+                    >
+                      {review.type}
+                    </span>
                   </td>
                   <td className="px-6 py-4">
                     <StatusBadge
-                      status={customer.verification}
-                      variant={verificationVariantMap[customer.verification]}
+                      status={review.status}
+                      variant={statusVariantMap[review.status]}
                     />
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    Mar {15 + idx}, 2026
+                    {review.date}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() =>
-                          navigate(`/dashboard/customers/${customer.id}`)
+                          navigate(`/dashboard/reviews/${review.id}`)
                         }
                         className="text-gray-400 transition-colors hover:text-gray-600"
                       >
                         <Edit size={16} />
                       </button>
                       <button
-                        onClick={() => void onDeleteCustomers([customer.id])}
+                        onClick={() => console.log("Delete", review.id)}
                         className="text-gray-400 transition-colors hover:text-red-600"
                       >
                         <Trash2 size={16} />
@@ -340,7 +388,7 @@ export const CustomersPage: React.FC = () => {
           {/* Pagination */}
           <div className="flex items-center justify-between border-t border-gray-200 bg-white px-6 py-4">
             <p className="text-sm text-gray-600">
-              Showing 1-5 of {filteredCustomers.length}
+              Showing 1-5 of {filteredReviews.length}
             </p>
             <div className="flex items-center gap-2">
               <button className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 text-sm font-medium text-white">

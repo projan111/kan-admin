@@ -1,150 +1,176 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, UserCheck, UserX, Edit, Trash2 } from "lucide-react";
-import { useToast } from "@/shared/components/feedback/ToastProvider";
-import { confirmAction } from "@/shared/utils/confirm";
 import {
-  hideRowIds,
-  readHiddenRowIds,
-} from "@/pages/dashboard/common/dashboardTableState";
-import { readCustomerRecords } from "./customerData";
+  Truck,
+  Package,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Edit,
+  Trash2,
+} from "lucide-react";
 import { StatusBadge } from "@/shared/components/dashboard/StatusBadge";
 
-const verificationVariantMap: Record<string, "qualified" | "closedLost"> = {
-  Verified: "qualified",
-  Pending: "closedLost",
+type Shipment = {
+  id: string;
+  trackingNumber: string;
+  orderNumber: string;
+  customerName: string;
+  courier: string;
+  origin: string;
+  destination: string;
+  status: "Pending" | "In Transit" | "Delivered" | "Failed" | "Returned";
+  shippedDate: string;
+  estimatedDelivery: string;
 };
 
-export const CustomersPage: React.FC = () => {
+// Sample data
+const sampleShipments: Shipment[] = [
+  {
+    id: "1",
+    trackingNumber: "TRK-2026-001",
+    orderNumber: "ORD-1001",
+    customerName: "Alice Martin",
+    courier: "FedEx",
+    origin: "New York, NY",
+    destination: "Los Angeles, CA",
+    status: "In Transit",
+    shippedDate: "Mar 18, 2026",
+    estimatedDelivery: "Mar 22, 2026",
+  },
+  {
+    id: "2",
+    trackingNumber: "TRK-2026-002",
+    orderNumber: "ORD-1002",
+    customerName: "Bob Chen",
+    courier: "UPS",
+    origin: "Chicago, IL",
+    destination: "Miami, FL",
+    status: "Delivered",
+    shippedDate: "Mar 15, 2026",
+    estimatedDelivery: "Mar 19, 2026",
+  },
+  {
+    id: "3",
+    trackingNumber: "TRK-2026-003",
+    orderNumber: "ORD-1003",
+    customerName: "Sara Kim",
+    courier: "DHL",
+    origin: "Seattle, WA",
+    destination: "Boston, MA",
+    status: "Pending",
+    shippedDate: "Mar 19, 2026",
+    estimatedDelivery: "Mar 24, 2026",
+  },
+  {
+    id: "4",
+    trackingNumber: "TRK-2026-004",
+    orderNumber: "ORD-1004",
+    customerName: "Tom Rivera",
+    courier: "USPS",
+    origin: "Austin, TX",
+    destination: "Portland, OR",
+    status: "Failed",
+    shippedDate: "Mar 16, 2026",
+    estimatedDelivery: "Mar 20, 2026",
+  },
+  {
+    id: "5",
+    trackingNumber: "TRK-2026-005",
+    orderNumber: "ORD-1005",
+    customerName: "Nina Patel",
+    courier: "FedEx",
+    origin: "Denver, CO",
+    destination: "Atlanta, GA",
+    status: "Returned",
+    shippedDate: "Mar 14, 2026",
+    estimatedDelivery: "Mar 18, 2026",
+  },
+];
+
+const statusVariantMap: Record<string, any> = {
+  Pending: "pending",
+  "In Transit": "qualified",
+  Delivered: "completed",
+  Failed: "cancelled",
+  Returned: "closedLost",
+};
+
+export const DeliveryPage: React.FC = () => {
   const navigate = useNavigate();
-  const toast = useToast();
   const [search, setSearch] = React.useState("");
-  const [customers, setCustomers] = React.useState(() => {
-    const hiddenIds = readHiddenRowIds("customers");
-    return readCustomerRecords().filter(
-      (customer) => !hiddenIds.has(customer.id),
-    );
-  });
+  const [shipments] = React.useState<Shipment[]>(sampleShipments);
   const [selectedIds, setSelectedIds] = React.useState<ReadonlyArray<string>>(
     [],
   );
 
-  const refreshCustomers = React.useCallback(() => {
-    const hiddenIds = readHiddenRowIds("customers");
-    setCustomers(
-      readCustomerRecords().filter((customer) => !hiddenIds.has(customer.id)),
-    );
-  }, []);
-
-  React.useEffect(() => {
-    refreshCustomers();
-  }, [refreshCustomers]);
-
-  const filteredCustomers = React.useMemo(() => {
+  const filteredShipments = React.useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return customers;
+    if (!query) return shipments;
 
-    return customers.filter((customer) =>
+    return shipments.filter((shipment) =>
       [
-        customer.name,
-        customer.email,
-        customer.city,
-        customer.segment,
-        customer.status,
-        customer.verification,
+        shipment.trackingNumber,
+        shipment.orderNumber,
+        shipment.customerName,
+        shipment.courier,
+        shipment.status,
       ].some((value) => value.toLowerCase().includes(query)),
     );
-  }, [customers, search]);
+  }, [shipments, search]);
 
   // Calculate stats
   const stats = React.useMemo(() => {
-    const total = customers.length;
-    const verified = customers.filter(
-      (c) => c.verification === "Verified",
-    ).length;
-    const pending = customers.filter(
-      (c) => c.verification === "Pending",
-    ).length;
-    const active = customers.filter((c) => c.status === "Active").length;
+    const total = shipments.length;
+    const pending = shipments.filter((s) => s.status === "Pending").length;
+    const inTransit = shipments.filter((s) => s.status === "In Transit").length;
+    const delivered = shipments.filter((s) => s.status === "Delivered").length;
+    const failed = shipments.filter((s) => s.status === "Failed").length;
 
-    return { total, verified, pending, active };
-  }, [customers]);
-
-  const onDeleteCustomers = async (customerIds: ReadonlyArray<string>) => {
-    if (customerIds.length === 0) return;
-
-    const confirmed = await confirmAction(
-      customerIds.length === 1
-        ? "Delete this customer?"
-        : `Delete ${customerIds.length} selected customers?`,
-    );
-    if (!confirmed) return;
-
-    hideRowIds("customers", customerIds);
-    refreshCustomers();
-    setSelectedIds((current) =>
-      current.filter((id) => !customerIds.includes(id)),
-    );
-    toast.success(
-      `${customerIds.length} ${customerIds.length === 1 ? "customer" : "customers"} deleted.`,
-    );
-  };
+    return { total, pending, inTransit, delivered, failed };
+  }, [shipments]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-[1400px] p-6">
-        {/* Breadcrumbs */}
-        <div className="mb-4 flex items-center gap-2 text-sm text-gray-500">
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="hover:text-gray-700"
-          >
-            🏠
-          </button>
-          <span>›</span>
-          <span className="text-gray-400">DASHBOARD</span>
-          <span>›</span>
-          <span className="font-medium text-gray-900 uppercase">CUSTOMERS</span>
-        </div>
-
         {/* Page Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-semibold text-gray-900">Customers</h1>
+          <h1 className="text-3xl font-semibold text-gray-900">Delivery</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Track customer accounts, verification status, and order history
+            Track shipments, courier management, and delivery timeline
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <div className="rounded-xl bg-blue-50 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Total Contacts
+                  Total Shipments
                 </p>
                 <p className="mt-1 text-3xl font-bold text-gray-900">
                   {stats.total}
                 </p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                <Users size={22} className="text-blue-600" />
+                <Package size={22} className="text-blue-600" />
               </div>
             </div>
           </div>
 
-          <div className="rounded-xl bg-yellow-50 p-4">
+          <div className="rounded-xl bg-amber-50 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Leads
+                  Pending
                 </p>
                 <p className="mt-1 text-3xl font-bold text-gray-900">
                   {stats.pending}
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
-                <UserX size={22} className="text-yellow-600" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100">
+                <Clock size={22} className="text-amber-600" />
               </div>
             </div>
           </div>
@@ -153,14 +179,14 @@ export const CustomersPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Prospects
+                  In Transit
                 </p>
                 <p className="mt-1 text-3xl font-bold text-gray-900">
-                  {stats.verified}
+                  {stats.inTransit}
                 </p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
-                <UserCheck size={22} className="text-purple-600" />
+                <Truck size={22} className="text-purple-600" />
               </div>
             </div>
           </div>
@@ -169,40 +195,50 @@ export const CustomersPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Customers
+                  Delivered
                 </p>
                 <p className="mt-1 text-3xl font-bold text-gray-900">
-                  {stats.active}
+                  {stats.delivered}
                 </p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
-                <Users size={22} className="text-emerald-600" />
+                <CheckCircle size={22} className="text-emerald-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-red-50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
+                  Failed
+                </p>
+                <p className="mt-1 text-3xl font-bold text-gray-900">
+                  {stats.failed}
+                </p>
+              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                <XCircle size={22} className="text-red-600" />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Search and Actions */}
+        {/* Search */}
         <div className="mb-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-gray-900">
-              {filteredCustomers.length} contacts
+              {filteredShipments.length} shipments
             </span>
           </div>
           <div className="flex items-center gap-3">
             <input
               type="text"
-              placeholder="Search contacts..."
+              placeholder="Search shipments..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-10 w-64 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-900 placeholder-gray-500 outline-none transition-all focus:border-gray-400"
             />
-            <button
-              onClick={() => navigate("/dashboard/customers/create")}
-              className="flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
-            >
-              + New Contact
-            </button>
           </div>
         </div>
 
@@ -215,13 +251,13 @@ export const CustomersPage: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={
-                      filteredCustomers.length > 0 &&
-                      selectedIds.length === filteredCustomers.length
+                      filteredShipments.length > 0 &&
+                      selectedIds.length === filteredShipments.length
                     }
                     onChange={(e) =>
                       setSelectedIds(
                         e.target.checked
-                          ? filteredCustomers.map((c) => c.id)
+                          ? filteredShipments.map((s) => s.id)
                           : [],
                       )
                     }
@@ -232,22 +268,25 @@ export const CustomersPage: React.FC = () => {
                   #
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Name
+                  Tracking Number
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Email
+                  Order
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Company
+                  Customer
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Phone
+                  Courier
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  Route
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Added
+                  Est. Delivery
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">
                   Action
@@ -255,30 +294,30 @@ export const CustomersPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {filteredCustomers.length === 0 ? (
+              {filteredShipments.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={9}
+                    colSpan={10}
                     className="px-6 py-12 text-center text-sm text-gray-500"
                   >
-                    No customers found.
+                    No shipments found.
                   </td>
                 </tr>
               ) : null}
-              {filteredCustomers.map((customer, idx) => (
+              {filteredShipments.map((shipment, idx) => (
                 <tr
-                  key={customer.id}
+                  key={shipment.id}
                   className="transition-colors hover:bg-gray-50"
                 >
                   <td className="px-6 py-4">
                     <input
                       type="checkbox"
-                      checked={selectedIds.includes(customer.id)}
+                      checked={selectedIds.includes(shipment.id)}
                       onChange={(e) =>
                         setSelectedIds((current) =>
                           e.target.checked
-                            ? [...current, customer.id]
-                            : current.filter((id) => id !== customer.id),
+                            ? [...current, shipment.id]
+                            : current.filter((id) => id !== shipment.id),
                         )
                       }
                       className="h-4 w-4 rounded border-gray-300"
@@ -287,45 +326,51 @@ export const CustomersPage: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{idx + 1}</td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-600">
-                        {customer.name.substring(0, 2).toUpperCase()}
-                      </div>
-                      <span className="text-sm font-medium text-gray-900">
-                        {customer.name}
-                      </span>
+                    <span className="font-mono text-sm font-medium text-gray-900">
+                      {shipment.trackingNumber}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-sm font-medium text-blue-600 hover:text-blue-700 cursor-pointer">
+                      {shipment.orderNumber}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {shipment.customerName}
+                  </td>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    {shipment.courier}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-xs text-gray-600">
+                      <div>{shipment.origin}</div>
+                      <div className="text-gray-400">→</div>
+                      <div>{shipment.destination}</div>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {customer.email}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {customer.city}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    +1 555-0{idx + 1}01
                   </td>
                   <td className="px-6 py-4">
                     <StatusBadge
-                      status={customer.verification}
-                      variant={verificationVariantMap[customer.verification]}
+                      status={shipment.status}
+                      variant={statusVariantMap[shipment.status]}
                     />
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    Mar {15 + idx}, 2026
+                    {shipment.estimatedDelivery}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() =>
-                          navigate(`/dashboard/customers/${customer.id}`)
+                          navigate(
+                            `/dashboard/delivery/shipments/${shipment.id}`,
+                          )
                         }
                         className="text-gray-400 transition-colors hover:text-gray-600"
                       >
                         <Edit size={16} />
                       </button>
                       <button
-                        onClick={() => void onDeleteCustomers([customer.id])}
+                        onClick={() => console.log("Delete", shipment.id)}
                         className="text-gray-400 transition-colors hover:text-red-600"
                       >
                         <Trash2 size={16} />
@@ -340,7 +385,7 @@ export const CustomersPage: React.FC = () => {
           {/* Pagination */}
           <div className="flex items-center justify-between border-t border-gray-200 bg-white px-6 py-4">
             <p className="text-sm text-gray-600">
-              Showing 1-5 of {filteredCustomers.length}
+              Showing 1-5 of {filteredShipments.length}
             </p>
             <div className="flex items-center gap-2">
               <button className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 text-sm font-medium text-white">

@@ -1,117 +1,133 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, UserCheck, UserX, Edit, Trash2 } from "lucide-react";
-import { useToast } from "@/shared/components/feedback/ToastProvider";
-import { confirmAction } from "@/shared/utils/confirm";
 import {
-  hideRowIds,
-  readHiddenRowIds,
-} from "@/pages/dashboard/common/dashboardTableState";
-import { readCustomerRecords } from "./customerData";
+  ShoppingCart,
+  Users,
+  DollarSign,
+  Clock,
+  Edit,
+  Trash2,
+} from "lucide-react";
 import { StatusBadge } from "@/shared/components/dashboard/StatusBadge";
 
-const verificationVariantMap: Record<string, "qualified" | "closedLost"> = {
-  Verified: "qualified",
-  Pending: "closedLost",
+type Cart = {
+  id: string;
+  customerName: string;
+  customerEmail: string;
+  items: number;
+  total: string;
+  status: "Active" | "Abandoned" | "Converted";
+  lastActivity: string;
+  createdAt: string;
 };
 
-export const CustomersPage: React.FC = () => {
+// Sample data
+const sampleCarts: Cart[] = [
+  {
+    id: "1",
+    customerName: "Alice Martin",
+    customerEmail: "alice@acme.com",
+    items: 3,
+    total: "$125.00",
+    status: "Active",
+    lastActivity: "2 hours ago",
+    createdAt: "Mar 19, 2026",
+  },
+  {
+    id: "2",
+    customerName: "Bob Chen",
+    customerEmail: "bob@globex.com",
+    items: 5,
+    total: "$289.50",
+    status: "Abandoned",
+    lastActivity: "2 days ago",
+    createdAt: "Mar 17, 2026",
+  },
+  {
+    id: "3",
+    customerName: "Sara Kim",
+    customerEmail: "sara@initech.com",
+    items: 2,
+    total: "$78.00",
+    status: "Active",
+    lastActivity: "1 hour ago",
+    createdAt: "Mar 19, 2026",
+  },
+  {
+    id: "4",
+    customerName: "Tom Rivera",
+    customerEmail: "tom@umbrella.com",
+    items: 4,
+    total: "$195.00",
+    status: "Converted",
+    lastActivity: "3 days ago",
+    createdAt: "Mar 16, 2026",
+  },
+  {
+    id: "5",
+    customerName: "Nina Patel",
+    customerEmail: "nina@hooli.com",
+    items: 1,
+    total: "$45.00",
+    status: "Abandoned",
+    lastActivity: "5 days ago",
+    createdAt: "Mar 14, 2026",
+  },
+];
+
+const statusVariantMap: Record<string, any> = {
+  Active: "active",
+  Abandoned: "pending",
+  Converted: "completed",
+};
+
+export const CartsPage: React.FC = () => {
   const navigate = useNavigate();
-  const toast = useToast();
   const [search, setSearch] = React.useState("");
-  const [customers, setCustomers] = React.useState(() => {
-    const hiddenIds = readHiddenRowIds("customers");
-    return readCustomerRecords().filter(
-      (customer) => !hiddenIds.has(customer.id),
-    );
-  });
+  const [carts] = React.useState<Cart[]>(sampleCarts);
   const [selectedIds, setSelectedIds] = React.useState<ReadonlyArray<string>>(
     [],
   );
 
-  const refreshCustomers = React.useCallback(() => {
-    const hiddenIds = readHiddenRowIds("customers");
-    setCustomers(
-      readCustomerRecords().filter((customer) => !hiddenIds.has(customer.id)),
-    );
-  }, []);
-
-  React.useEffect(() => {
-    refreshCustomers();
-  }, [refreshCustomers]);
-
-  const filteredCustomers = React.useMemo(() => {
+  const filteredCarts = React.useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return customers;
+    if (!query) return carts;
 
-    return customers.filter((customer) =>
-      [
-        customer.name,
-        customer.email,
-        customer.city,
-        customer.segment,
-        customer.status,
-        customer.verification,
-      ].some((value) => value.toLowerCase().includes(query)),
+    return carts.filter((cart) =>
+      [cart.customerName, cart.customerEmail, cart.status].some((value) =>
+        value.toLowerCase().includes(query),
+      ),
     );
-  }, [customers, search]);
+  }, [carts, search]);
 
   // Calculate stats
   const stats = React.useMemo(() => {
-    const total = customers.length;
-    const verified = customers.filter(
-      (c) => c.verification === "Verified",
-    ).length;
-    const pending = customers.filter(
-      (c) => c.verification === "Pending",
-    ).length;
-    const active = customers.filter((c) => c.status === "Active").length;
-
-    return { total, verified, pending, active };
-  }, [customers]);
-
-  const onDeleteCustomers = async (customerIds: ReadonlyArray<string>) => {
-    if (customerIds.length === 0) return;
-
-    const confirmed = await confirmAction(
-      customerIds.length === 1
-        ? "Delete this customer?"
-        : `Delete ${customerIds.length} selected customers?`,
+    const total = carts.length;
+    const active = carts.filter((c) => c.status === "Active").length;
+    const abandoned = carts.filter((c) => c.status === "Abandoned").length;
+    const totalValue = carts.reduce(
+      (sum, c) => sum + parseFloat(c.total.replace("$", "")),
+      0,
     );
-    if (!confirmed) return;
 
-    hideRowIds("customers", customerIds);
-    refreshCustomers();
-    setSelectedIds((current) =>
-      current.filter((id) => !customerIds.includes(id)),
-    );
-    toast.success(
-      `${customerIds.length} ${customerIds.length === 1 ? "customer" : "customers"} deleted.`,
-    );
-  };
+    return {
+      total,
+      active,
+      abandoned,
+      totalValue: `$${totalValue.toFixed(2)}`,
+    };
+  }, [carts]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-[1400px] p-6">
-        {/* Breadcrumbs */}
-        <div className="mb-4 flex items-center gap-2 text-sm text-gray-500">
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="hover:text-gray-700"
-          >
-            🏠
-          </button>
-          <span>›</span>
-          <span className="text-gray-400">DASHBOARD</span>
-          <span>›</span>
-          <span className="font-medium text-gray-900 uppercase">CUSTOMERS</span>
-        </div>
-
         {/* Page Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-semibold text-gray-900">Customers</h1>
+          <h1 className="text-3xl font-semibold text-gray-900">
+            Shopping Carts
+          </h1>
           <p className="mt-2 text-sm text-gray-600">
-            Track customer accounts, verification status, and order history
+            Monitor active carts, abandoned carts, and line-item visibility
           </p>
         </div>
 
@@ -121,46 +137,14 @@ export const CustomersPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Total Contacts
+                  Total Carts
                 </p>
                 <p className="mt-1 text-3xl font-bold text-gray-900">
                   {stats.total}
                 </p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                <Users size={22} className="text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-yellow-50 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Leads
-                </p>
-                <p className="mt-1 text-3xl font-bold text-gray-900">
-                  {stats.pending}
-                </p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
-                <UserX size={22} className="text-yellow-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-purple-50 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Prospects
-                </p>
-                <p className="mt-1 text-3xl font-bold text-gray-900">
-                  {stats.verified}
-                </p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
-                <UserCheck size={22} className="text-purple-600" />
+                <ShoppingCart size={22} className="text-blue-600" />
               </div>
             </div>
           </div>
@@ -169,7 +153,7 @@ export const CustomersPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Customers
+                  Active
                 </p>
                 <p className="mt-1 text-3xl font-bold text-gray-900">
                   {stats.active}
@@ -180,29 +164,55 @@ export const CustomersPage: React.FC = () => {
               </div>
             </div>
           </div>
+
+          <div className="rounded-xl bg-amber-50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
+                  Abandoned
+                </p>
+                <p className="mt-1 text-3xl font-bold text-gray-900">
+                  {stats.abandoned}
+                </p>
+              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100">
+                <Clock size={22} className="text-amber-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-purple-50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
+                  Total Value
+                </p>
+                <p className="mt-1 text-3xl font-bold text-gray-900">
+                  {stats.totalValue}
+                </p>
+              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
+                <DollarSign size={22} className="text-purple-600" />
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Search and Actions */}
+        {/* Search */}
         <div className="mb-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-gray-900">
-              {filteredCustomers.length} contacts
+              {filteredCarts.length} carts
             </span>
           </div>
           <div className="flex items-center gap-3">
             <input
               type="text"
-              placeholder="Search contacts..."
+              placeholder="Search carts..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-10 w-64 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-900 placeholder-gray-500 outline-none transition-all focus:border-gray-400"
             />
-            <button
-              onClick={() => navigate("/dashboard/customers/create")}
-              className="flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
-            >
-              + New Contact
-            </button>
           </div>
         </div>
 
@@ -215,14 +225,12 @@ export const CustomersPage: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={
-                      filteredCustomers.length > 0 &&
-                      selectedIds.length === filteredCustomers.length
+                      filteredCarts.length > 0 &&
+                      selectedIds.length === filteredCarts.length
                     }
                     onChange={(e) =>
                       setSelectedIds(
-                        e.target.checked
-                          ? filteredCustomers.map((c) => c.id)
-                          : [],
+                        e.target.checked ? filteredCarts.map((c) => c.id) : [],
                       )
                     }
                     className="h-4 w-4 rounded border-gray-300"
@@ -232,22 +240,22 @@ export const CustomersPage: React.FC = () => {
                   #
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Name
+                  Customer
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Email
+                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">
+                  Items
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Company
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Phone
+                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                  Total
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Added
+                  Last Activity
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  Created
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">
                   Action
@@ -255,30 +263,30 @@ export const CustomersPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {filteredCustomers.length === 0 ? (
+              {filteredCarts.length === 0 ? (
                 <tr>
                   <td
                     colSpan={9}
                     className="px-6 py-12 text-center text-sm text-gray-500"
                   >
-                    No customers found.
+                    No carts found.
                   </td>
                 </tr>
               ) : null}
-              {filteredCustomers.map((customer, idx) => (
+              {filteredCarts.map((cart, idx) => (
                 <tr
-                  key={customer.id}
+                  key={cart.id}
                   className="transition-colors hover:bg-gray-50"
                 >
                   <td className="px-6 py-4">
                     <input
                       type="checkbox"
-                      checked={selectedIds.includes(customer.id)}
+                      checked={selectedIds.includes(cart.id)}
                       onChange={(e) =>
                         setSelectedIds((current) =>
                           e.target.checked
-                            ? [...current, customer.id]
-                            : current.filter((id) => id !== customer.id),
+                            ? [...current, cart.id]
+                            : current.filter((id) => id !== cart.id),
                         )
                       }
                       className="h-4 w-4 rounded border-gray-300"
@@ -287,45 +295,43 @@ export const CustomersPage: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{idx + 1}</td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-600">
-                        {customer.name.substring(0, 2).toUpperCase()}
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {cart.customerName}
                       </div>
-                      <span className="text-sm font-medium text-gray-900">
-                        {customer.name}
-                      </span>
+                      <div className="text-xs text-gray-500">
+                        {cart.customerEmail}
+                      </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {customer.email}
+                  <td className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
+                    {cart.items}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {customer.city}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    +1 555-0{idx + 1}01
+                  <td className="px-6 py-4 text-right text-sm font-semibold text-gray-900">
+                    {cart.total}
                   </td>
                   <td className="px-6 py-4">
                     <StatusBadge
-                      status={customer.verification}
-                      variant={verificationVariantMap[customer.verification]}
+                      status={cart.status}
+                      variant={statusVariantMap[cart.status]}
                     />
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    Mar {15 + idx}, 2026
+                    {cart.lastActivity}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-600">
+                    {cart.createdAt}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-2">
                       <button
-                        onClick={() =>
-                          navigate(`/dashboard/customers/${customer.id}`)
-                        }
+                        onClick={() => navigate(`/dashboard/carts/${cart.id}`)}
                         className="text-gray-400 transition-colors hover:text-gray-600"
                       >
                         <Edit size={16} />
                       </button>
                       <button
-                        onClick={() => void onDeleteCustomers([customer.id])}
+                        onClick={() => console.log("Delete", cart.id)}
                         className="text-gray-400 transition-colors hover:text-red-600"
                       >
                         <Trash2 size={16} />
@@ -340,7 +346,7 @@ export const CustomersPage: React.FC = () => {
           {/* Pagination */}
           <div className="flex items-center justify-between border-t border-gray-200 bg-white px-6 py-4">
             <p className="text-sm text-gray-600">
-              Showing 1-5 of {filteredCustomers.length}
+              Showing 1-5 of {filteredCarts.length}
             </p>
             <div className="flex items-center gap-2">
               <button className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 text-sm font-medium text-white">

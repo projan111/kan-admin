@@ -1,166 +1,170 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, UserCheck, UserX, Edit, Trash2 } from "lucide-react";
-import { useToast } from "@/shared/components/feedback/ToastProvider";
-import { confirmAction } from "@/shared/utils/confirm";
 import {
-  hideRowIds,
-  readHiddenRowIds,
-} from "@/pages/dashboard/common/dashboardTableState";
-import { readCustomerRecords } from "./customerData";
+  Tag,
+  CheckCircle,
+  Clock,
+  XCircle,
+  TrendingUp,
+  Edit,
+  Trash2,
+} from "lucide-react";
 import { StatusBadge } from "@/shared/components/dashboard/StatusBadge";
 
-const verificationVariantMap: Record<string, "qualified" | "closedLost"> = {
-  Verified: "qualified",
-  Pending: "closedLost",
+type Coupon = {
+  id: string;
+  code: string;
+  description: string;
+  discountType: "Percentage" | "Fixed";
+  discountValue: string;
+  minPurchase: string;
+  maxDiscount: string;
+  usageLimit: number;
+  usageCount: number;
+  status: "Active" | "Expired" | "Scheduled" | "Inactive";
+  validFrom: string;
+  validUntil: string;
 };
 
-export const CustomersPage: React.FC = () => {
+// Sample data
+const sampleCoupons: Coupon[] = [
+  {
+    id: "1",
+    code: "SPRING25",
+    description: "Spring Sale - 25% off",
+    discountType: "Percentage",
+    discountValue: "25%",
+    minPurchase: "$50",
+    maxDiscount: "$100",
+    usageLimit: 1000,
+    usageCount: 342,
+    status: "Active",
+    validFrom: "Mar 1, 2026",
+    validUntil: "Mar 31, 2026",
+  },
+  {
+    id: "2",
+    code: "WELCOME10",
+    description: "Welcome discount for new customers",
+    discountType: "Fixed",
+    discountValue: "$10",
+    minPurchase: "$30",
+    maxDiscount: "$10",
+    usageLimit: 500,
+    usageCount: 128,
+    status: "Active",
+    validFrom: "Jan 1, 2026",
+    validUntil: "Dec 31, 2026",
+  },
+  {
+    id: "3",
+    code: "FLASH50",
+    description: "Flash sale - 50% off",
+    discountType: "Percentage",
+    discountValue: "50%",
+    minPurchase: "$100",
+    maxDiscount: "$200",
+    usageLimit: 100,
+    usageCount: 100,
+    status: "Expired",
+    validFrom: "Feb 14, 2026",
+    validUntil: "Feb 15, 2026",
+  },
+  {
+    id: "4",
+    code: "SUMMER30",
+    description: "Summer Sale - 30% off",
+    discountType: "Percentage",
+    discountValue: "30%",
+    minPurchase: "$75",
+    maxDiscount: "$150",
+    usageLimit: 2000,
+    usageCount: 0,
+    status: "Scheduled",
+    validFrom: "Jun 1, 2026",
+    validUntil: "Aug 31, 2026",
+  },
+  {
+    id: "5",
+    code: "FREESHIP",
+    description: "Free shipping on all orders",
+    discountType: "Fixed",
+    discountValue: "$15",
+    minPurchase: "$0",
+    maxDiscount: "$15",
+    usageLimit: 5000,
+    usageCount: 1234,
+    status: "Inactive",
+    validFrom: "Jan 1, 2026",
+    validUntil: "Dec 31, 2026",
+  },
+];
+
+const statusVariantMap: Record<string, any> = {
+  Active: "qualified",
+  Expired: "cancelled",
+  Scheduled: "pending",
+  Inactive: "closedLost",
+};
+
+export const CouponsPage: React.FC = () => {
   const navigate = useNavigate();
-  const toast = useToast();
   const [search, setSearch] = React.useState("");
-  const [customers, setCustomers] = React.useState(() => {
-    const hiddenIds = readHiddenRowIds("customers");
-    return readCustomerRecords().filter(
-      (customer) => !hiddenIds.has(customer.id),
-    );
-  });
+  const [coupons] = React.useState<Coupon[]>(sampleCoupons);
   const [selectedIds, setSelectedIds] = React.useState<ReadonlyArray<string>>(
     [],
   );
 
-  const refreshCustomers = React.useCallback(() => {
-    const hiddenIds = readHiddenRowIds("customers");
-    setCustomers(
-      readCustomerRecords().filter((customer) => !hiddenIds.has(customer.id)),
-    );
-  }, []);
-
-  React.useEffect(() => {
-    refreshCustomers();
-  }, [refreshCustomers]);
-
-  const filteredCustomers = React.useMemo(() => {
+  const filteredCoupons = React.useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return customers;
+    if (!query) return coupons;
 
-    return customers.filter((customer) =>
+    return coupons.filter((coupon) =>
       [
-        customer.name,
-        customer.email,
-        customer.city,
-        customer.segment,
-        customer.status,
-        customer.verification,
+        coupon.code,
+        coupon.description,
+        coupon.discountType,
+        coupon.status,
       ].some((value) => value.toLowerCase().includes(query)),
     );
-  }, [customers, search]);
+  }, [coupons, search]);
 
   // Calculate stats
   const stats = React.useMemo(() => {
-    const total = customers.length;
-    const verified = customers.filter(
-      (c) => c.verification === "Verified",
-    ).length;
-    const pending = customers.filter(
-      (c) => c.verification === "Pending",
-    ).length;
-    const active = customers.filter((c) => c.status === "Active").length;
+    const total = coupons.length;
+    const active = coupons.filter((c) => c.status === "Active").length;
+    const expired = coupons.filter((c) => c.status === "Expired").length;
+    const scheduled = coupons.filter((c) => c.status === "Scheduled").length;
+    const totalUsage = coupons.reduce((sum, c) => sum + c.usageCount, 0);
 
-    return { total, verified, pending, active };
-  }, [customers]);
-
-  const onDeleteCustomers = async (customerIds: ReadonlyArray<string>) => {
-    if (customerIds.length === 0) return;
-
-    const confirmed = await confirmAction(
-      customerIds.length === 1
-        ? "Delete this customer?"
-        : `Delete ${customerIds.length} selected customers?`,
-    );
-    if (!confirmed) return;
-
-    hideRowIds("customers", customerIds);
-    refreshCustomers();
-    setSelectedIds((current) =>
-      current.filter((id) => !customerIds.includes(id)),
-    );
-    toast.success(
-      `${customerIds.length} ${customerIds.length === 1 ? "customer" : "customers"} deleted.`,
-    );
-  };
+    return { total, active, expired, scheduled, totalUsage };
+  }, [coupons]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-[1400px] p-6">
-        {/* Breadcrumbs */}
-        <div className="mb-4 flex items-center gap-2 text-sm text-gray-500">
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="hover:text-gray-700"
-          >
-            🏠
-          </button>
-          <span>›</span>
-          <span className="text-gray-400">DASHBOARD</span>
-          <span>›</span>
-          <span className="font-medium text-gray-900 uppercase">CUSTOMERS</span>
-        </div>
-
         {/* Page Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-semibold text-gray-900">Customers</h1>
+          <h1 className="text-3xl font-semibold text-gray-900">Coupons</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Track customer accounts, verification status, and order history
+            Manage discount codes, activation windows, and usage tracking
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <div className="rounded-xl bg-blue-50 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Total Contacts
+                  Total Coupons
                 </p>
                 <p className="mt-1 text-3xl font-bold text-gray-900">
                   {stats.total}
                 </p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                <Users size={22} className="text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-yellow-50 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Leads
-                </p>
-                <p className="mt-1 text-3xl font-bold text-gray-900">
-                  {stats.pending}
-                </p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
-                <UserX size={22} className="text-yellow-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-purple-50 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Prospects
-                </p>
-                <p className="mt-1 text-3xl font-bold text-gray-900">
-                  {stats.verified}
-                </p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
-                <UserCheck size={22} className="text-purple-600" />
+                <Tag size={22} className="text-blue-600" />
               </div>
             </div>
           </div>
@@ -169,39 +173,87 @@ export const CustomersPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Customers
+                  Active
                 </p>
                 <p className="mt-1 text-3xl font-bold text-gray-900">
                   {stats.active}
                 </p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
-                <Users size={22} className="text-emerald-600" />
+                <CheckCircle size={22} className="text-emerald-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-red-50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
+                  Expired
+                </p>
+                <p className="mt-1 text-3xl font-bold text-gray-900">
+                  {stats.expired}
+                </p>
+              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                <XCircle size={22} className="text-red-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-amber-50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
+                  Scheduled
+                </p>
+                <p className="mt-1 text-3xl font-bold text-gray-900">
+                  {stats.scheduled}
+                </p>
+              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100">
+                <Clock size={22} className="text-amber-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-purple-50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
+                  Total Usage
+                </p>
+                <p className="mt-1 text-3xl font-bold text-gray-900">
+                  {stats.totalUsage}
+                </p>
+              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
+                <TrendingUp size={22} className="text-purple-600" />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Search and Actions */}
+        {/* Search */}
         <div className="mb-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-gray-900">
-              {filteredCustomers.length} contacts
+              {filteredCoupons.length} coupons
             </span>
           </div>
           <div className="flex items-center gap-3">
             <input
               type="text"
-              placeholder="Search contacts..."
+              placeholder="Search coupons..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-10 w-64 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-900 placeholder-gray-500 outline-none transition-all focus:border-gray-400"
             />
             <button
-              onClick={() => navigate("/dashboard/customers/create")}
+              onClick={() => navigate("/dashboard/coupons/create")}
               className="flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
             >
-              + New Contact
+              + New Coupon
             </button>
           </div>
         </div>
@@ -215,13 +267,13 @@ export const CustomersPage: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={
-                      filteredCustomers.length > 0 &&
-                      selectedIds.length === filteredCustomers.length
+                      filteredCoupons.length > 0 &&
+                      selectedIds.length === filteredCoupons.length
                     }
                     onChange={(e) =>
                       setSelectedIds(
                         e.target.checked
-                          ? filteredCustomers.map((c) => c.id)
+                          ? filteredCoupons.map((c) => c.id)
                           : [],
                       )
                     }
@@ -232,22 +284,22 @@ export const CustomersPage: React.FC = () => {
                   #
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Name
+                  Code
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Email
+                  Description
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Company
+                  Discount
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">
+                  Usage
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Phone
+                  Valid Period
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Added
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">
                   Action
@@ -255,30 +307,30 @@ export const CustomersPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {filteredCustomers.length === 0 ? (
+              {filteredCoupons.length === 0 ? (
                 <tr>
                   <td
                     colSpan={9}
                     className="px-6 py-12 text-center text-sm text-gray-500"
                   >
-                    No customers found.
+                    No coupons found.
                   </td>
                 </tr>
               ) : null}
-              {filteredCustomers.map((customer, idx) => (
+              {filteredCoupons.map((coupon, idx) => (
                 <tr
-                  key={customer.id}
+                  key={coupon.id}
                   className="transition-colors hover:bg-gray-50"
                 >
                   <td className="px-6 py-4">
                     <input
                       type="checkbox"
-                      checked={selectedIds.includes(customer.id)}
+                      checked={selectedIds.includes(coupon.id)}
                       onChange={(e) =>
                         setSelectedIds((current) =>
                           e.target.checked
-                            ? [...current, customer.id]
-                            : current.filter((id) => id !== customer.id),
+                            ? [...current, coupon.id]
+                            : current.filter((id) => id !== coupon.id),
                         )
                       }
                       className="h-4 w-4 rounded border-gray-300"
@@ -287,45 +339,52 @@ export const CustomersPage: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{idx + 1}</td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-600">
-                        {customer.name.substring(0, 2).toUpperCase()}
+                    <span className="font-mono text-sm font-bold text-gray-900">
+                      {coupon.code}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-600">
+                    {coupon.description}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div>
+                      <div className="text-sm font-semibold text-gray-900">
+                        {coupon.discountValue}
                       </div>
-                      <span className="text-sm font-medium text-gray-900">
-                        {customer.name}
-                      </span>
+                      <div className="text-xs text-gray-500">
+                        {coupon.discountType}
+                      </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {customer.email}
+                  <td className="px-6 py-4 text-center">
+                    <div className="text-sm font-medium text-gray-900">
+                      {coupon.usageCount} / {coupon.usageLimit}
+                    </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {customer.city}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    +1 555-0{idx + 1}01
+                  <td className="px-6 py-4">
+                    <div className="text-xs text-gray-600">
+                      <div>{coupon.validFrom}</div>
+                      <div>{coupon.validUntil}</div>
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <StatusBadge
-                      status={customer.verification}
-                      variant={verificationVariantMap[customer.verification]}
+                      status={coupon.status}
+                      variant={statusVariantMap[coupon.status]}
                     />
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    Mar {15 + idx}, 2026
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() =>
-                          navigate(`/dashboard/customers/${customer.id}`)
+                          navigate(`/dashboard/coupons/${coupon.id}`)
                         }
                         className="text-gray-400 transition-colors hover:text-gray-600"
                       >
                         <Edit size={16} />
                       </button>
                       <button
-                        onClick={() => void onDeleteCustomers([customer.id])}
+                        onClick={() => console.log("Delete", coupon.id)}
                         className="text-gray-400 transition-colors hover:text-red-600"
                       >
                         <Trash2 size={16} />
@@ -340,7 +399,7 @@ export const CustomersPage: React.FC = () => {
           {/* Pagination */}
           <div className="flex items-center justify-between border-t border-gray-200 bg-white px-6 py-4">
             <p className="text-sm text-gray-600">
-              Showing 1-5 of {filteredCustomers.length}
+              Showing 1-5 of {filteredCoupons.length}
             </p>
             <div className="flex items-center gap-2">
               <button className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 text-sm font-medium text-white">

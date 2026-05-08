@@ -1,166 +1,162 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, UserCheck, UserX, Edit, Trash2 } from "lucide-react";
-import { useToast } from "@/shared/components/feedback/ToastProvider";
-import { confirmAction } from "@/shared/utils/confirm";
 import {
-  hideRowIds,
-  readHiddenRowIds,
-} from "@/pages/dashboard/common/dashboardTableState";
-import { readCustomerRecords } from "./customerData";
+  CreditCard,
+  CheckCircle,
+  Clock,
+  XCircle,
+  DollarSign,
+  Edit,
+  Trash2,
+} from "lucide-react";
 import { StatusBadge } from "@/shared/components/dashboard/StatusBadge";
 
-const verificationVariantMap: Record<string, "qualified" | "closedLost"> = {
-  Verified: "qualified",
-  Pending: "closedLost",
+type Payment = {
+  id: string;
+  transactionId: string;
+  customerName: string;
+  customerEmail: string;
+  orderNumber: string;
+  amount: string;
+  method: string;
+  status: "Completed" | "Pending" | "Failed" | "Refunded";
+  date: string;
 };
 
-export const CustomersPage: React.FC = () => {
+// Sample data
+const samplePayments: Payment[] = [
+  {
+    id: "1",
+    transactionId: "TXN-2026-001",
+    customerName: "Alice Martin",
+    customerEmail: "alice@acme.com",
+    orderNumber: "ORD-1001",
+    amount: "$125.00",
+    method: "Credit Card",
+    status: "Completed",
+    date: "Mar 19, 2026",
+  },
+  {
+    id: "2",
+    transactionId: "TXN-2026-002",
+    customerName: "Bob Chen",
+    customerEmail: "bob@globex.com",
+    orderNumber: "ORD-1002",
+    amount: "$289.50",
+    method: "PayPal",
+    status: "Pending",
+    date: "Mar 19, 2026",
+  },
+  {
+    id: "3",
+    transactionId: "TXN-2026-003",
+    customerName: "Sara Kim",
+    customerEmail: "sara@initech.com",
+    orderNumber: "ORD-1003",
+    amount: "$78.00",
+    method: "Credit Card",
+    status: "Completed",
+    date: "Mar 18, 2026",
+  },
+  {
+    id: "4",
+    transactionId: "TXN-2026-004",
+    customerName: "Tom Rivera",
+    customerEmail: "tom@umbrella.com",
+    orderNumber: "ORD-1004",
+    amount: "$195.00",
+    method: "Debit Card",
+    status: "Failed",
+    date: "Mar 18, 2026",
+  },
+  {
+    id: "5",
+    transactionId: "TXN-2026-005",
+    customerName: "Nina Patel",
+    customerEmail: "nina@hooli.com",
+    orderNumber: "ORD-1005",
+    amount: "$45.00",
+    method: "Credit Card",
+    status: "Refunded",
+    date: "Mar 17, 2026",
+  },
+];
+
+const statusVariantMap: Record<string, any> = {
+  Completed: "completed",
+  Pending: "pending",
+  Failed: "cancelled",
+  Refunded: "closedLost",
+};
+
+export const PaymentsPage: React.FC = () => {
   const navigate = useNavigate();
-  const toast = useToast();
   const [search, setSearch] = React.useState("");
-  const [customers, setCustomers] = React.useState(() => {
-    const hiddenIds = readHiddenRowIds("customers");
-    return readCustomerRecords().filter(
-      (customer) => !hiddenIds.has(customer.id),
-    );
-  });
+  const [payments] = React.useState<Payment[]>(samplePayments);
   const [selectedIds, setSelectedIds] = React.useState<ReadonlyArray<string>>(
     [],
   );
 
-  const refreshCustomers = React.useCallback(() => {
-    const hiddenIds = readHiddenRowIds("customers");
-    setCustomers(
-      readCustomerRecords().filter((customer) => !hiddenIds.has(customer.id)),
-    );
-  }, []);
-
-  React.useEffect(() => {
-    refreshCustomers();
-  }, [refreshCustomers]);
-
-  const filteredCustomers = React.useMemo(() => {
+  const filteredPayments = React.useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return customers;
+    if (!query) return payments;
 
-    return customers.filter((customer) =>
+    return payments.filter((payment) =>
       [
-        customer.name,
-        customer.email,
-        customer.city,
-        customer.segment,
-        customer.status,
-        customer.verification,
+        payment.transactionId,
+        payment.customerName,
+        payment.customerEmail,
+        payment.orderNumber,
+        payment.method,
+        payment.status,
       ].some((value) => value.toLowerCase().includes(query)),
     );
-  }, [customers, search]);
+  }, [payments, search]);
 
   // Calculate stats
   const stats = React.useMemo(() => {
-    const total = customers.length;
-    const verified = customers.filter(
-      (c) => c.verification === "Verified",
-    ).length;
-    const pending = customers.filter(
-      (c) => c.verification === "Pending",
-    ).length;
-    const active = customers.filter((c) => c.status === "Active").length;
+    const total = payments.length;
+    const completed = payments.filter((p) => p.status === "Completed").length;
+    const pending = payments.filter((p) => p.status === "Pending").length;
+    const failed = payments.filter((p) => p.status === "Failed").length;
+    const totalAmount = payments
+      .filter((p) => p.status === "Completed")
+      .reduce((sum, p) => sum + parseFloat(p.amount.replace("$", "")), 0);
 
-    return { total, verified, pending, active };
-  }, [customers]);
-
-  const onDeleteCustomers = async (customerIds: ReadonlyArray<string>) => {
-    if (customerIds.length === 0) return;
-
-    const confirmed = await confirmAction(
-      customerIds.length === 1
-        ? "Delete this customer?"
-        : `Delete ${customerIds.length} selected customers?`,
-    );
-    if (!confirmed) return;
-
-    hideRowIds("customers", customerIds);
-    refreshCustomers();
-    setSelectedIds((current) =>
-      current.filter((id) => !customerIds.includes(id)),
-    );
-    toast.success(
-      `${customerIds.length} ${customerIds.length === 1 ? "customer" : "customers"} deleted.`,
-    );
-  };
+    return {
+      total,
+      completed,
+      pending,
+      failed,
+      totalAmount: `$${totalAmount.toFixed(2)}`,
+    };
+  }, [payments]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-[1400px] p-6">
-        {/* Breadcrumbs */}
-        <div className="mb-4 flex items-center gap-2 text-sm text-gray-500">
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="hover:text-gray-700"
-          >
-            🏠
-          </button>
-          <span>›</span>
-          <span className="text-gray-400">DASHBOARD</span>
-          <span>›</span>
-          <span className="font-medium text-gray-900 uppercase">CUSTOMERS</span>
-        </div>
-
         {/* Page Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-semibold text-gray-900">Customers</h1>
+          <h1 className="text-3xl font-semibold text-gray-900">Payments</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Track customer accounts, verification status, and order history
+            Track payment status, transaction lookup, and payment method filters
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <div className="rounded-xl bg-blue-50 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Total Contacts
+                  Total Payments
                 </p>
                 <p className="mt-1 text-3xl font-bold text-gray-900">
                   {stats.total}
                 </p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                <Users size={22} className="text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-yellow-50 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Leads
-                </p>
-                <p className="mt-1 text-3xl font-bold text-gray-900">
-                  {stats.pending}
-                </p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
-                <UserX size={22} className="text-yellow-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-xl bg-purple-50 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Prospects
-                </p>
-                <p className="mt-1 text-3xl font-bold text-gray-900">
-                  {stats.verified}
-                </p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
-                <UserCheck size={22} className="text-purple-600" />
+                <CreditCard size={22} className="text-blue-600" />
               </div>
             </div>
           </div>
@@ -169,40 +165,82 @@ export const CustomersPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
-                  Customers
+                  Completed
                 </p>
                 <p className="mt-1 text-3xl font-bold text-gray-900">
-                  {stats.active}
+                  {stats.completed}
                 </p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
-                <Users size={22} className="text-emerald-600" />
+                <CheckCircle size={22} className="text-emerald-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-amber-50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
+                  Pending
+                </p>
+                <p className="mt-1 text-3xl font-bold text-gray-900">
+                  {stats.pending}
+                </p>
+              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100">
+                <Clock size={22} className="text-amber-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-red-50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
+                  Failed
+                </p>
+                <p className="mt-1 text-3xl font-bold text-gray-900">
+                  {stats.failed}
+                </p>
+              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                <XCircle size={22} className="text-red-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-purple-50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-600">
+                  Total Revenue
+                </p>
+                <p className="mt-1 text-3xl font-bold text-gray-900">
+                  {stats.totalAmount}
+                </p>
+              </div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
+                <DollarSign size={22} className="text-purple-600" />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Search and Actions */}
+        {/* Search */}
         <div className="mb-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-gray-900">
-              {filteredCustomers.length} contacts
+              {filteredPayments.length} payments
             </span>
           </div>
           <div className="flex items-center gap-3">
             <input
               type="text"
-              placeholder="Search contacts..."
+              placeholder="Search payments..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-10 w-64 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-900 placeholder-gray-500 outline-none transition-all focus:border-gray-400"
             />
-            <button
-              onClick={() => navigate("/dashboard/customers/create")}
-              className="flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
-            >
-              + New Contact
-            </button>
           </div>
         </div>
 
@@ -215,13 +253,13 @@ export const CustomersPage: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={
-                      filteredCustomers.length > 0 &&
-                      selectedIds.length === filteredCustomers.length
+                      filteredPayments.length > 0 &&
+                      selectedIds.length === filteredPayments.length
                     }
                     onChange={(e) =>
                       setSelectedIds(
                         e.target.checked
-                          ? filteredCustomers.map((c) => c.id)
+                          ? filteredPayments.map((p) => p.id)
                           : [],
                       )
                     }
@@ -232,22 +270,25 @@ export const CustomersPage: React.FC = () => {
                   #
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Name
+                  Transaction ID
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Email
+                  Customer
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Company
+                  Order
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                  Amount
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Phone
+                  Method
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Added
+                  Date
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500">
                   Action
@@ -255,30 +296,30 @@ export const CustomersPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {filteredCustomers.length === 0 ? (
+              {filteredPayments.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={9}
+                    colSpan={10}
                     className="px-6 py-12 text-center text-sm text-gray-500"
                   >
-                    No customers found.
+                    No payments found.
                   </td>
                 </tr>
               ) : null}
-              {filteredCustomers.map((customer, idx) => (
+              {filteredPayments.map((payment, idx) => (
                 <tr
-                  key={customer.id}
+                  key={payment.id}
                   className="transition-colors hover:bg-gray-50"
                 >
                   <td className="px-6 py-4">
                     <input
                       type="checkbox"
-                      checked={selectedIds.includes(customer.id)}
+                      checked={selectedIds.includes(payment.id)}
                       onChange={(e) =>
                         setSelectedIds((current) =>
                           e.target.checked
-                            ? [...current, customer.id]
-                            : current.filter((id) => id !== customer.id),
+                            ? [...current, payment.id]
+                            : current.filter((id) => id !== payment.id),
                         )
                       }
                       className="h-4 w-4 rounded border-gray-300"
@@ -287,45 +328,52 @@ export const CustomersPage: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{idx + 1}</td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-600">
-                        {customer.name.substring(0, 2).toUpperCase()}
+                    <span className="font-mono text-sm font-medium text-gray-900">
+                      {payment.transactionId}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {payment.customerName}
                       </div>
-                      <span className="text-sm font-medium text-gray-900">
-                        {customer.name}
-                      </span>
+                      <div className="text-xs text-gray-500">
+                        {payment.customerEmail}
+                      </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {customer.email}
+                  <td className="px-6 py-4">
+                    <span className="text-sm font-medium text-blue-600 hover:text-blue-700 cursor-pointer">
+                      {payment.orderNumber}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right text-sm font-semibold text-gray-900">
+                    {payment.amount}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {customer.city}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    +1 555-0{idx + 1}01
+                    {payment.method}
                   </td>
                   <td className="px-6 py-4">
                     <StatusBadge
-                      status={customer.verification}
-                      variant={verificationVariantMap[customer.verification]}
+                      status={payment.status}
+                      variant={statusVariantMap[payment.status]}
                     />
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    Mar {15 + idx}, 2026
+                    {payment.date}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() =>
-                          navigate(`/dashboard/customers/${customer.id}`)
+                          navigate(`/dashboard/payments/${payment.id}`)
                         }
                         className="text-gray-400 transition-colors hover:text-gray-600"
                       >
                         <Edit size={16} />
                       </button>
                       <button
-                        onClick={() => void onDeleteCustomers([customer.id])}
+                        onClick={() => console.log("Delete", payment.id)}
                         className="text-gray-400 transition-colors hover:text-red-600"
                       >
                         <Trash2 size={16} />
@@ -340,7 +388,7 @@ export const CustomersPage: React.FC = () => {
           {/* Pagination */}
           <div className="flex items-center justify-between border-t border-gray-200 bg-white px-6 py-4">
             <p className="text-sm text-gray-600">
-              Showing 1-5 of {filteredCustomers.length}
+              Showing 1-5 of {filteredPayments.length}
             </p>
             <div className="flex items-center gap-2">
               <button className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 text-sm font-medium text-white">

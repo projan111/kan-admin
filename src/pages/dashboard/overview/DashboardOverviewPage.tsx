@@ -1,57 +1,215 @@
 import React from "react";
-import { Calendar, Clock, Download, Eye } from "lucide-react";
+import {
+  Calendar,
+  Download,
+  Eye,
+  ShoppingCart,
+  Package,
+  DollarSign,
+  Users,
+  TrendingUp,
+  AlertCircle,
+  ShoppingBag,
+} from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 
-type SaleStatus = "Completed" | "Pending" | "In Progress" | "Cancelled";
-
-type SaleRow = Readonly<{
-  name: string;
+type Order = Readonly<{
+  id: string;
+  orderNumber: string;
+  customerName: string;
+  customerEmail: string;
+  products: number;
+  total: string;
+  status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
   date: string;
-  price: string;
-  category: string;
-  product: string;
-  city: string;
-  status: SaleStatus;
 }>;
 
-const statusDot: Record<SaleStatus, string> = {
-  Completed: "bg-[#22c55e]",
-  Pending: "bg-[#f59e0b]",
-  "In Progress": "bg-[#3b82f6]",
-  Cancelled: "bg-[#ef4444]",
+type Inquiry = Readonly<{
+  id: string;
+  customerName: string;
+  email: string;
+  subject: string;
+  type: "Product" | "Site";
+  status: "New" | "In Progress" | "Resolved";
+  date: string;
+}>;
+
+const orderStatusStyles: Record<Order["status"], string> = {
+  Pending: "bg-amber-50 text-amber-700 border-amber-200",
+  Processing: "bg-blue-50 text-blue-700 border-blue-200",
+  Shipped: "bg-purple-50 text-purple-700 border-purple-200",
+  Delivered: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  Cancelled: "bg-red-50 text-red-700 border-red-200",
 };
 
-const statusLabel: Record<SaleStatus, string> = {
-  Completed: "text-[#15803d]",
-  Pending: "text-[#a16207]",
-  "In Progress": "text-[#1d4ed8]",
-  Cancelled: "text-[#b91c1c]",
+const inquiryStatusStyles: Record<Inquiry["status"], string> = {
+  New: "bg-amber-50 text-amber-700 border-amber-200",
+  "In Progress": "bg-blue-50 text-blue-700 border-blue-200",
+  Resolved: "bg-emerald-50 text-emerald-700 border-emerald-200",
 };
 
+const recentOrders: ReadonlyArray<Order> = [
+  {
+    id: "1",
+    orderNumber: "ORD-1001",
+    customerName: "Sarah Johnson",
+    customerEmail: "sarah.j@email.com",
+    products: 3,
+    total: "$299.99",
+    status: "Processing",
+    date: "May 8, 2026",
+  },
+  {
+    id: "2",
+    orderNumber: "ORD-1002",
+    customerName: "Mike Chen",
+    customerEmail: "mike.c@email.com",
+    products: 1,
+    total: "$79.99",
+    status: "Shipped",
+    date: "May 7, 2026",
+  },
+  {
+    id: "3",
+    orderNumber: "ORD-1003",
+    customerName: "Emma Wilson",
+    customerEmail: "emma.w@email.com",
+    products: 5,
+    total: "$459.95",
+    status: "Pending",
+    date: "May 8, 2026",
+  },
+  {
+    id: "4",
+    orderNumber: "ORD-1004",
+    customerName: "David Brown",
+    customerEmail: "david.b@email.com",
+    products: 2,
+    total: "$149.98",
+    status: "Delivered",
+    date: "May 6, 2026",
+  },
+  {
+    id: "5",
+    orderNumber: "ORD-1005",
+    customerName: "Lisa Anderson",
+    customerEmail: "lisa.a@email.com",
+    products: 4,
+    total: "$389.96",
+    status: "Processing",
+    date: "May 8, 2026",
+  },
+];
+
+const recentInquiries: ReadonlyArray<Inquiry> = [
+  {
+    id: "1",
+    customerName: "Alex Turner",
+    email: "alex.t@email.com",
+    subject: "Product availability question",
+    type: "Product",
+    status: "New",
+    date: "May 8, 2026",
+  },
+  {
+    id: "2",
+    customerName: "Jessica Lee",
+    email: "jessica.l@email.com",
+    subject: "Shipping timeline inquiry",
+    type: "Product",
+    status: "In Progress",
+    date: "May 7, 2026",
+  },
+  {
+    id: "3",
+    customerName: "Robert Kim",
+    email: "robert.k@email.com",
+    subject: "Website navigation issue",
+    type: "Site",
+    status: "New",
+    date: "May 8, 2026",
+  },
+  {
+    id: "4",
+    customerName: "Maria Garcia",
+    email: "maria.g@email.com",
+    subject: "Product recommendation request",
+    type: "Product",
+    status: "Resolved",
+    date: "May 6, 2026",
+  },
+  {
+    id: "5",
+    customerName: "James Wilson",
+    email: "james.w@email.com",
+    subject: "Return policy question",
+    type: "Site",
+    status: "In Progress",
+    date: "May 7, 2026",
+  },
+];
+
+// Updated stat cards for e-commerce
 const statCards = [
   {
-    label: "Revenue",
-    value: "Rs 124,542",
-    change: "+41% from last month",
+    label: "TOTAL ORDERS",
+    value: "1,284",
+    change: "+12.5% vs last month",
     positive: true,
+    bgColor: "bg-blue-50",
+    iconColor: "text-blue-600",
+    icon: ShoppingCart,
+    iconBg: "bg-blue-100",
   },
   {
-    label: "Total Sales",
-    value: "12,562",
-    change: "+41% from last month",
+    label: "REVENUE (MTD)",
+    value: "$84,200",
+    change: "+18.2% vs last month",
     positive: true,
+    bgColor: "bg-emerald-50",
+    iconColor: "text-emerald-600",
+    icon: DollarSign,
+    iconBg: "bg-emerald-100",
   },
   {
-    label: "Total Orders",
-    value: "7,532",
-    change: "-50% from last month",
+    label: "NEW CUSTOMERS",
+    value: "342",
+    change: "+24 this week",
+    positive: true,
+    bgColor: "bg-purple-50",
+    iconColor: "text-purple-600",
+    icon: Users,
+    iconBg: "bg-purple-100",
+  },
+  {
+    label: "AVG ORDER VALUE",
+    value: "$65.60",
+    change: "+5.3% vs last month",
+    positive: true,
+    bgColor: "bg-cyan-50",
+    iconColor: "text-cyan-600",
+    icon: TrendingUp,
+    iconBg: "bg-cyan-100",
+  },
+  {
+    label: "PENDING ORDERS",
+    value: "28",
+    change: "Needs attention",
     positive: false,
+    bgColor: "bg-amber-50",
+    iconColor: "text-amber-600",
+    icon: AlertCircle,
+    iconBg: "bg-amber-100",
   },
   {
-    label: "Profit",
-    value: "Rs 60,652",
-    change: "+41% from last month",
-    positive: true,
+    label: "LOW STOCK ITEMS",
+    value: "15",
+    change: "Restock required",
+    positive: false,
+    bgColor: "bg-red-50",
+    iconColor: "text-red-600",
+    icon: Package,
+    iconBg: "bg-red-100",
   },
 ] as const;
 
@@ -67,54 +225,7 @@ const barDateLabels = [
 ];
 const lineValues = [80, 40, 90, 60, 100, 50, 80, 120, 90, 150, 200];
 
-const recentSales: ReadonlyArray<SaleRow> = [
-  {
-    name: "Savannah Nguyen",
-    date: "07/05/2025",
-    price: "Rs 25.00",
-    category: "Clothes",
-    product: "Lc Waikiki Jean cargo fille avec taille",
-    city: "Rabat",
-    status: "Completed",
-  },
-  {
-    name: "Jerome Bell",
-    date: "07/05/2025",
-    price: "Rs 25.00",
-    category: "Shoes",
-    product: "Lc Waikiki Jean cargo fille avec taille",
-    city: "Rabat",
-    status: "Pending",
-  },
-  {
-    name: "Darlene Robertson",
-    date: "07/05/2025",
-    price: "Rs 25.00",
-    category: "Clothes",
-    product: "Lc Waikiki Jean cargo fille avec taille",
-    city: "Rabat",
-    status: "In Progress",
-  },
-  {
-    name: "Cody Fisher",
-    date: "07/05/2025",
-    price: "Rs 25.00",
-    category: "Clothes",
-    product: "Lc Waikiki Jean cargo fille avec taille",
-    city: "Rabat",
-    status: "Cancelled",
-  },
-];
-
-const tabs = [
-  "All tasks",
-  "Completed",
-  "In Progress",
-  "Pending Approval",
-  "Cancelled",
-] as const;
-type Tab = (typeof tabs)[number];
-
+// BarChart Component
 const BarChart: React.FC = () => {
   const max = Math.max(...barValues);
   const W = 300;
@@ -149,6 +260,7 @@ const BarChart: React.FC = () => {
   );
 };
 
+// LineChart Component
 const LineChart: React.FC = () => {
   const min = Math.min(...lineValues);
   const max = Math.max(...lineValues);
@@ -203,90 +315,82 @@ const LineChart: React.FC = () => {
   );
 };
 
+// Main Dashboard Component
 export const DashboardOverviewPage: React.FC = () => {
-  const [activeTab, setActiveTab] = React.useState<Tab>("All tasks");
-
-  const filteredSales = recentSales.filter((row) => {
-    if (activeTab === "All tasks") return true;
-    if (activeTab === "Pending Approval") return row.status === "Pending";
-    return row.status === (activeTab as SaleStatus);
-  });
-
   return (
-    <div className="space-y-5">
+    <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-[26px] font-semibold tracking-[-0.03em] text-(--text)">
-          Overview
-        </h1>
+        <h1 className="text-2xl font-bold text-zinc-900">Dashboard Overview</h1>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[13px] text-(--muted)">
-            06 Oct 2025 – 07 Oct 2025
-          </span>
-          <Button variant="outline" size="sm">
-            <Calendar size={13} />
+          <Button variant="outline" size="sm" className="text-xs">
+            <Calendar size={14} />
             Last 30 days
           </Button>
-          <Button variant="outline" size="sm">
-            <Download size={13} />
+          <Button variant="outline" size="sm" className="text-xs">
+            <Download size={14} />
             Export
           </Button>
         </div>
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-        {statCards.map((stat) => (
-          <article
-            key={stat.label}
-            className="rounded-[12px] border border-(--line) bg-white p-5"
-          >
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-[13px] font-medium text-(--text)">
-                {stat.label}
-              </p>
-              <Clock size={14} className="text-(--muted)" />
-            </div>
-            <div className="mt-3 border-t border-(--line) pt-3">
-              <p className="text-[22px] font-semibold tracking-[-0.03em] text-(--text)">
-                {stat.value}
-              </p>
-              <p
-                className={`mt-1 text-[12px] font-medium ${stat.positive ? "text-[#16a34a]" : "text-[#dc2626]"}`}
-              >
-                {stat.change}
-              </p>
-            </div>
-          </article>
-        ))}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        {statCards.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <article
+              key={stat.label}
+              className={`rounded-xl ${stat.bgColor} p-4 transition-shadow hover:shadow-md`}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-600">
+                    {stat.label}
+                  </p>
+                  <p className="mt-2 text-3xl font-bold text-zinc-900">
+                    {stat.value}
+                  </p>
+                  <p
+                    className={`mt-1 text-xs font-medium ${stat.positive ? "text-slate-600" : "text-slate-700"}`}
+                  >
+                    {stat.change}
+                  </p>
+                </div>
+                <div
+                  className={`flex h-12 w-12 items-center justify-center rounded-full ${stat.iconBg}`}
+                >
+                  <Icon size={24} className={stat.iconColor} strokeWidth={2} />
+                </div>
+              </div>
+            </article>
+          );
+        })}
       </div>
 
       {/* Charts */}
       <div className="grid gap-4 xl:grid-cols-2">
         {/* Bar Chart */}
-        <div className="rounded-[12px] border border-(--line) bg-white p-5">
+        <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[13px] font-medium text-(--muted)">
-                Total sales
-              </p>
-              <p className="mt-1 text-[24px] font-semibold tracking-[-0.03em] text-(--text)">
-                1,525
-              </p>
-              <p className="text-[12px] font-medium text-[#16a34a]">
+              <p className="text-sm font-medium text-slate-600">Total sales</p>
+              <p className="mt-1 text-3xl font-bold text-zinc-900">1,525</p>
+              <p className="mt-1 flex items-center gap-1 text-xs font-medium text-emerald-600">
+                <TrendingUp size={12} />
                 +20.1% from last month
               </p>
             </div>
-            <Button variant="outline" size="sm" className="shrink-0">
+            <Button variant="outline" size="sm" className="shrink-0 text-xs">
               <Calendar size={13} />
               Last 30 days
             </Button>
           </div>
-          <div className="mt-4">
+          <div className="mt-6">
             <BarChart />
-            <div className="mt-1 flex justify-between px-1">
+            <div className="mt-2 flex justify-between px-1">
               {barDateLabels.map((d) => (
-                <span key={d} className="text-[9px] text-(--muted)">
+                <span key={d} className="text-[9px] text-slate-500">
                   {d}
                 </span>
               ))}
@@ -295,158 +399,238 @@ export const DashboardOverviewPage: React.FC = () => {
         </div>
 
         {/* Line Chart */}
-        <div className="rounded-[12px] border border-(--line) bg-white p-5">
+        <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
           <div>
-            <p className="text-[13px] font-medium text-(--muted)">
-              Total Revenue
-            </p>
-            <p className="mt-1 text-[24px] font-semibold tracking-[-0.03em] text-(--text)">
+            <p className="text-sm font-medium text-slate-600">Total Revenue</p>
+            <p className="mt-1 text-3xl font-bold text-zinc-900">
               Rs 20,462.89
             </p>
-            <p className="text-[12px] font-medium text-[#16a34a]">
+            <p className="mt-1 flex items-center gap-1 text-xs font-medium text-emerald-600">
+              <TrendingUp size={12} />
               +30.1% from last month
             </p>
           </div>
-          <div className="mt-5">
+          <div className="mt-6">
             <LineChart />
           </div>
         </div>
       </div>
 
-      {/* Last Sales */}
-      <div className="rounded-[12px] border border-(--line) bg-white">
+      {/* Recent Orders Table */}
+      <div className="rounded-xl border border-zinc-200 bg-white shadow-sm">
         {/* Section Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-(--line) px-5 py-4">
-          <h2 className="text-[16px] font-semibold text-(--text)">
-            Last sales
-          </h2>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 px-6 py-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-semibold text-zinc-900">
+              Recent Orders
+            </h2>
+            <span className="rounded-md bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">
+              {recentOrders.length} orders
+            </span>
+          </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
-              className="flex items-center gap-1.5 text-[13px] font-medium text-[#0066cc] hover:underline"
+              className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700"
             >
-              <Eye size={13} />
-              View all
+              View all orders →
             </button>
-            <Button variant="outline" size="sm">
-              <Calendar size={13} />
-              Last 30 days
-            </Button>
-            <Button variant="outline" size="sm">
-              <Download size={13} />
-              Export
-            </Button>
           </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex flex-wrap gap-0 border-b border-(--line) px-5">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className={`relative flex items-center gap-1.5 px-3 py-3 text-[13px] font-medium transition-colors ${
-                activeTab === tab
-                  ? "text-primary after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-primary after:content-['']"
-                  : "text-(--muted) hover:text-(--text)"
-              }`}
-            >
-              {tab}
-              {tab === "Pending Approval" ? (
-                <span className="rounded-[4px] bg-primary px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
-                  2
-                </span>
-              ) : null}
-            </button>
-          ))}
         </div>
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-[13px]">
+          <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-(--line)">
-                {[
-                  "Client Name",
-                  "Data %",
-                  "Price",
-                  "Category",
-                  "Product",
-                  "City",
-                  "Status",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-(--muted)"
-                  >
-                    {h}
-                  </th>
-                ))}
+              <tr className="border-b border-zinc-100 bg-zinc-50">
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  #
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  Order
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  Customer
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  Products
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  Total
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  Action
+                </th>
               </tr>
             </thead>
-            <tbody>
-              {filteredSales.length === 0 ? (
+            <tbody className="divide-y divide-zinc-100">
+              {recentOrders.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={7}
-                    className="px-5 py-8 text-center text-(--muted)"
+                    colSpan={8}
+                    className="px-6 py-12 text-center text-slate-500"
                   >
-                    No records found.
+                    No orders found.
                   </td>
                 </tr>
               ) : null}
-              {filteredSales.map((row) => (
+              {recentOrders.map((order, idx) => (
                 <tr
-                  key={`${row.name}-${row.date}-${row.status}`}
-                  className="border-b border-(--line) last:border-0 hover:bg-(--surface-soft)"
+                  key={order.id}
+                  className="hover:bg-zinc-50 transition-colors"
                 >
-                  <td className="px-5 py-3 font-medium text-(--text)">
-                    {row.name}
-                  </td>
-                  <td className="px-5 py-3 text-(--muted)">{row.date}</td>
-                  <td className="px-5 py-3 font-medium text-(--text)">
-                    {row.price}
-                  </td>
-                  <td className="px-5 py-3 text-(--muted)">{row.category}</td>
-                  <td className="max-w-[180px] truncate px-5 py-3 text-(--muted)">
-                    {row.product}
-                  </td>
-                  <td className="px-5 py-3 text-(--muted)">{row.city}</td>
-                  <td className="px-5 py-3">
-                    <span className="flex items-center gap-1.5">
-                      <span
-                        className={`h-2 w-2 shrink-0 rounded-full ${statusDot[row.status]}`}
-                      />
-                      <span
-                        className={`font-medium ${statusLabel[row.status]}`}
-                      >
-                        {row.status}
-                      </span>
+                  <td className="px-6 py-4 text-slate-600">{idx + 1}</td>
+                  <td className="px-6 py-4">
+                    <span className="font-mono text-sm font-medium text-zinc-900">
+                      {order.orderNumber}
                     </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div>
+                      <div className="font-medium text-zinc-900">
+                        {order.customerName}
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        {order.customerEmail}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center font-medium text-zinc-900">
+                    {order.products}
+                  </td>
+                  <td className="px-6 py-4 text-right font-semibold text-zinc-900">
+                    {order.total}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-medium ${orderStatusStyles[order.status]}`}
+                    >
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-slate-600">{order.date}</td>
+                  <td className="px-6 py-4 text-center">
+                    <Button
+                      size="sm"
+                      className="bg-zinc-900 text-white hover:bg-zinc-800 text-xs font-medium"
+                    >
+                      <Eye size={14} />
+                      View
+                    </Button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+      </div>
 
-        {/* Pagination */}
-        <div className="flex items-center justify-end gap-1 px-5 py-3">
-          {(["«", "‹", "1", "›", "»"] as const).map((label, i) => (
+      {/* Recent Inquiries Table */}
+      <div className="rounded-xl border border-zinc-200 bg-white shadow-sm">
+        {/* Section Header */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 px-6 py-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-semibold text-zinc-900">
+              Recent Inquiries
+            </h2>
+            <span className="rounded-md bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+              {recentInquiries.filter((i) => i.status === "New").length} new
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
             <button
-              key={label}
               type="button"
-              className={`grid h-8 w-8 place-items-center rounded-[6px] border text-[13px] transition-colors ${
-                label === "1"
-                  ? "border-primary bg-primary font-semibold text-white"
-                  : "border-(--line) text-(--muted) hover:bg-(--surface-soft)"
-              }`}
-              aria-label={["First", "Previous", "Page 1", "Next", "Last"][i]}
+              className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700"
             >
-              {label}
+              View all inquiries →
             </button>
-          ))}
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-zinc-100 bg-zinc-50">
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  #
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  Customer
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  Subject
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  Type
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-100">
+              {recentInquiries.map((inquiry, idx) => (
+                <tr
+                  key={inquiry.id}
+                  className="hover:bg-zinc-50 transition-colors"
+                >
+                  <td className="px-6 py-4 text-slate-600">{idx + 1}</td>
+                  <td className="px-6 py-4">
+                    <div>
+                      <div className="font-medium text-zinc-900">
+                        {inquiry.customerName}
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        {inquiry.email}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-zinc-900">{inquiry.subject}</td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${
+                        inquiry.type === "Product"
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-purple-100 text-purple-700"
+                      }`}
+                    >
+                      {inquiry.type}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-medium ${inquiryStatusStyles[inquiry.status]}`}
+                    >
+                      {inquiry.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-slate-600">{inquiry.date}</td>
+                  <td className="px-6 py-4 text-center">
+                    <Button
+                      size="sm"
+                      className="bg-zinc-900 text-white hover:bg-zinc-800 text-xs font-medium"
+                    >
+                      <Eye size={14} />
+                      View
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
